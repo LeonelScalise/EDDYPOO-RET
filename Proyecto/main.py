@@ -59,6 +59,6 @@ def menu_interactivo(institucion_educativa):
         else:
             print("Opción inválida")
 
-##HOLA LEO SOY MATI JAJAJAJAJAJAJ
+
 #institucion_educativa = InstitucionEducativa()
 #menu_interactivo(institucion_educativa)
