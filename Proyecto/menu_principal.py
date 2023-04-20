@@ -17,6 +17,7 @@ def menu_principal():
             armado_menu("MENU PROFESOR",["Iniciar Sesion", "Salir"], ["Hola Profesor Girafales"])
         elif arranque == 4:
             inicio = False
+        
                 
                 
                 
