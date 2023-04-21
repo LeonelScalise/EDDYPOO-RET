@@ -1,3 +1,12 @@
+from validador import *
+from armado_menu import *
+from claseInstitucion import *
+import os
+
+clear = lambda : os.system('cls')
+
+ITBA = Institucion("ITBA", "Pepe")
+
 class Persona:
   def __init__(self, nombre_apellido, dni, sexo, fecha_nac):
     self.nombre_apellido = nombre_apellido
@@ -6,9 +15,20 @@ class Persona:
     self.fecha_nac = fecha_nac
 
 class Alumno(Persona):
+  legajo_alumnos = []
+
+  def menu_registro_alumno():
+    
+    legajo_ingresado = int(input("Ingrese su numero de legajo: "))
+    clear()
+    for alumno in ITBA.alumnos:
+        if alumno.legajo == legajo_ingresado:
+          print(f"Bienvenido {alumno.nombre_apellido}")
+
+
   def __init__(self, nombre_apellido, dni, sexo, fecha_nac, legajo, materias_aprobadas, materias_en_curso, fecha_ingreso, carrera, estado_alumno, creditos_aprobados=0):
     super().__init__(nombre_apellido, dni, sexo, fecha_nac)
-    self.legajo = legajo
+    self.legajo = int(legajo)
     self.materias_aprobadas = []
     self.materias_en_curso = []
     self.fecha_ingreso = fecha_ingreso
@@ -16,7 +36,13 @@ class Alumno(Persona):
     self.estado_alumno = estado_alumno
     self.tramites_pendientes = []
     self.tramites_resueltos = []
-    self.legajo_alumnos = []
+
+  #def menu_alumno(self):
+   # print(f"\t\t\nBienvenido {self.nombre_apellido}\n")
+    
+#  def menu_registro_alumno(self, institucion):
+#   legajo_ingresado = int(input("Ingrese su numero de legajo: "))
+
   
   def __str__(self):
     return self.nombre_apellido

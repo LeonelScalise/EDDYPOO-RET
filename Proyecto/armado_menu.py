@@ -19,7 +19,7 @@ def armado_menu(nombre_menu, lista_opciones, lista_funciones): #arma los menus d
             if opcion_elegida == cont_opciones:
                 inicio_while = False #si elige la ultima opcion, eligio "Salir" porque siempre esta como ultima opcion
             elif opcion_elegida == numero:
-                print(lista_funciones[numero - 1])
+                lista_funciones[numero - 1]()
 
 
         """     elif opcion_elegida == 1:

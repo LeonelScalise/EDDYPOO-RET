@@ -1,4 +1,4 @@
-from clasePersona import *
+""" from clasePersona import * """
 
 class Institucion():
     def __init__(self, nombre, rector) -> None:
@@ -30,7 +30,7 @@ class Institucion():
     def buscar_administrativo(legajo): """
 
 
-
+""" 
 if __name__=="__main__":
 
     ITBA = Institucion("ITBA", "Pepe")
@@ -42,5 +42,5 @@ if __name__=="__main__":
     ITBA.agregar_alumno(Fede)
     
     print(ITBA.buscar_alumno("Legajo de leo"))
-
+ """
     

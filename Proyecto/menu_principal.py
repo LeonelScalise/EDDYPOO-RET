@@ -1,6 +1,7 @@
 #from persona import *
 from armado_menu import *
 import os
+from clasePersona import *
 clear = lambda : os.system('cls')
 
 
@@ -10,19 +11,23 @@ def menu_principal():
         arranque = int(input("\n\t\tMENU PRINCIPAL\n\n1. Administrativo\n2. Alumno\n3. Profesor\n4. Salir\n\nSeleccione una opcion: "))
         clear()
         if arranque == 1:
-            armado_menu("MENU ADMINISTRATIVO",["Crear administrativo", "Iniciar sesion", "Salir"], ["Hola 1", "Hola 2"])
+            armado_menu("MENU ADMINISTRATIVO", ["Crear administrativo", "Iniciar sesion", "Salir"], ["Hola 1", "Hola 2"])
         elif arranque == 2:
-            armado_menu("MENU ALUMNO",["Iniciar Sesion", "Salir"], ["Hola Alumno"])
+            armado_menu("MENU ALUMNO", ["Iniciar Sesion", "Salir"], [Alumno.menu_registro_alumno])
         elif arranque == 3:
-            armado_menu("MENU PROFESOR",["Iniciar Sesion", "Salir"], ["Hola Profesor Girafales"])
+            armado_menu("MENU PROFESOR", ["Iniciar Sesion", "Salir"], ["Hola Profesor Girafales"])
         elif arranque == 4:
             inicio = False
         
                 
-                
-                
     
     print('Saliste del menu')
+
+Leo = Alumno("Leonel Scalise",43046873,"M","fecha",62523,[],[],"fecha","negocios","vigente")
+Fede = Alumno("fede",4112893,"M","fecha",234234,[],[],"fecha","negocios","vigente")
+
+ITBA.agregar_alumno(Leo)
+ITBA.agregar_alumno(Fede)
 
 menu_principal()
 
