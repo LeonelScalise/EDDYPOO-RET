@@ -4,9 +4,9 @@ clear = lambda : os.system('cls') #para limpiar la terminal cada vez que se elij
 
 def armado_menu(nombre_menu, lista_opciones, lista_funciones): #arma los menus de todos, le entran como argumento el nombre que queres que tenga el menu, una lista de el texto que queres que haya en cada opcion, y la lista donde van a estar las funciones propias de cada menu (los metodos dentro de las clases)
     inicio_while = True
-    lista_numeros = []
     while inicio_while: #arranca loop para crear las opciones
         cont_opciones = 0
+        lista_numeros = []
         print(f'\n\t\t{nombre_menu}\n') #aparece el nombre del menu que pusiste
         for texto in lista_opciones: #agarra uno por uno el texto de cada opcion
             cont_opciones += 1 #comienza por la opcion 1
@@ -20,6 +20,8 @@ def armado_menu(nombre_menu, lista_opciones, lista_funciones): #arma los menus d
                 inicio_while = False #si elige la ultima opcion, eligio "Salir" porque siempre esta como ultima opcion
             elif opcion_elegida == numero:
                 lista_funciones[numero - 1]()
+    
+        # aca cuando cambias de usuario en iniciar sesion, lista_numeros tiene mas elementos entonces se bugea --> a chequear --> ya lo arregle
 
 
         """     elif opcion_elegida == 1:

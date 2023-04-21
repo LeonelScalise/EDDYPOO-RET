@@ -21,6 +21,15 @@ class Institucion():
         self.alumnos.append(alumno)
         print("Alumno agregado")
 
+    def agregar_profesor(self, profesor):
+        
+        self.profesores.append(profesor)
+        print("Profesor agregado")
+    
+    def agregar_administrativo(self, administrativo):
+        
+        self.administrativos.append(administrativo)
+        print("Administrativo agregado")
 
             
 """ 

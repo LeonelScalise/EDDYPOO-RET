@@ -5,7 +5,7 @@ import os
 
 clear = lambda : os.system('cls')
 
-ITBA = Institucion("ITBA", "Pepe")
+
 
 class Persona:
   def __init__(self, nombre_apellido, dni, sexo, fecha_nac):
@@ -17,13 +17,13 @@ class Persona:
 class Alumno(Persona):
   legajo_alumnos = []
 
-  def menu_registro_alumno():
+  def menu_registro_alumno(institucion:Institucion):
     
     legajo_ingresado = int(input("Ingrese su numero de legajo: "))
     clear()
-    for alumno in ITBA.alumnos:
+    for alumno in institucion.alumnos:
         if alumno.legajo == legajo_ingresado:
-          print(f"Bienvenido {alumno.nombre_apellido}")
+          return print(f"Bienvenido {alumno.nombre_apellido}")
 
 
   def __init__(self, nombre_apellido, dni, sexo, fecha_nac, legajo, materias_aprobadas, materias_en_curso, fecha_ingreso, carrera, estado_alumno, creditos_aprobados=0):
@@ -58,6 +58,14 @@ class Profesor(Persona):
     self.comisiones_acargo = []  
 
 class Administrativo(Persona):
+  def menu_registro_administrativo(institucion:Institucion):
+    
+    legajo_ingresado = int(input("Ingrese su numero de legajo: "))
+    clear()
+    for admin in institucion.administrativos:
+        if admin.legajo == legajo_ingresado:
+          print(f"Bienvenido {admin.nombre_apellido}")
+
   def __init__(self, nombre_apellido, dni, sexo, fecha_nac, legajo, fecha_ingreso, tramites_abiertos, tramites_resueltos, fecha_baja=None):
     super().__init__(nombre_apellido, dni, sexo, fecha_nac)
     self.legajo = legajo
