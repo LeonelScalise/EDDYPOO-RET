@@ -11,7 +11,7 @@ def menu_principal():
         arranque = int(input("\n\t\tMENU PRINCIPAL\n\n1. Administrativo\n2. Alumno\n3. Profesor\n4. Salir\n\nSeleccione una opcion: "))
         clear()
         if arranque == 1:
-            armado_menu("MENU ADMINISTRATIVO", ["Crear administrativo", "Iniciar sesion", "Salir"], ["Hola 1", lambda : Administrativo.menu_registro_administrativo(ITBA)])
+            armado_menu("MENU ADMINISTRATIVO", ["Crear administrativo", "Iniciar sesion", "Salir"], [lambda : Administrativo.crear_administrativo(ITBA), lambda : Administrativo.menu_registro_administrativo(ITBA)])
         elif arranque == 2:
             armado_menu("MENU ALUMNO", ["Iniciar Sesion", "Salir"], [lambda : Alumno.menu_registro_alumno(ITBA)])
         elif arranque == 3:
@@ -24,7 +24,7 @@ def menu_principal():
     print('Saliste del menu')
 
 Leo = Alumno("Leonel Scalise",43046873,"M","fecha",62523,[],[],"fecha","negocios","vigente")
-Fede = Alumno("Federico Matías Nieddu",4112893,"M","fecha",234234,[],[],"fecha","negocios","vigente")
+Fede = Alumno("Juana Santacreu",4112893,"F","fecha",234234,[],[],"fecha","negocios","vigente")
 Mati = Alumno("Matías Díaz Cantón",43573875,"M","fecha",62473,[],[],"fecha","negocios","vigente")
 
 ElAdmin = Administrativo("El Admin",4112893,"M","fecha",10000,"FECHA INGRESO",[],[])  # nombre_apellido, dni, sexo, fecha_nac, legajo, fecha_ingreso, tramites_abiertos, tramites_resueltos, fecha_baja=None
