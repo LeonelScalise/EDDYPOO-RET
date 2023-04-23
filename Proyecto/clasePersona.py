@@ -17,10 +17,8 @@ class Alumno(Persona):
 
   def menu_registro_alumno(institucion:Institucion):
     x = "o"
-    clear()
-
     legajo_ingresado = validadorLegajo(institucion)
-
+    clear()
     for alumno in institucion.alumnos:
         if alumno.legajo == legajo_ingresado:
           if alumno.sexo == "F":
@@ -89,7 +87,7 @@ class Administrativo(Persona):
 
   def menu_registro_administrativo(institucion:Institucion):
     x = "o"
-    legajo_ingresado = int(input("Ingrese su numero de legajo: "))
+    legajo_ingresado = validadorLegajo(institucion)
     clear()
     for admin in institucion.administrativos:
         if admin.legajo == legajo_ingresado:
