@@ -41,13 +41,7 @@ class Alumno(Persona):
     self.tramites_pendientes = []
     self.tramites_resueltos = []
 
-  #def menu_alumno(self):
-   # print(f"\t\t\nBienvenido {self.nombre_apellido}\n")
-    
-#  def menu_registro_alumno(self, institucion):
-#   legajo_ingresado = int(input("Ingrese su numero de legajo: "))
-
-  
+ 
   def __str__(self):
     return self.nombre_apellido
   
