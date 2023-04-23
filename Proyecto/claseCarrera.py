@@ -3,6 +3,7 @@ class Carrera():
         self.nombre = nombre
         self.creditos_para_recibirse = creditos_para_recibirse
         self.director_carrera = director_carrera
+        self.materias = []
         self.alumnos_actuales = []
         self.alumnos_recibidos = []
         self.cantidad_alumnos_recibidos=0
