@@ -17,10 +17,8 @@ class Alumno(Persona):
 
   def menu_registro_alumno(institucion:Institucion):
     x = "o"
-    clear()
-
     legajo_ingresado = validadorLegajo(institucion)
-
+    clear()
     for alumno in institucion.alumnos:
         if alumno.legajo == legajo_ingresado:
           if alumno.sexo == "F":
