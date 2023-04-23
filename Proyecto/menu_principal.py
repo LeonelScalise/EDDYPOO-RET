@@ -8,7 +8,7 @@ clear = lambda : os.system('cls')
 def menu_principal():
     inicio = True
     while inicio:
-        arranque = int(input("\n\t\tMENU PRINCIPAL\n\n1. Administrativo\n2. Alumno\n3. Profesor\n4. Salir\n\nSeleccione una opcion: "))
+        arranque = int(input("\n\t\tMENU PRINCIPAL\n\n1. Administrativo\n2. Alumno\n3. Profesor\n4. Salir\n\nSeleccione una opcion: ")) #Hay que validar este input
         clear()
         if arranque == 1:
             armado_menu("MENU ADMINISTRATIVO", ["Crear administrativo", "Iniciar sesion", "Salir"], [lambda : Administrativo.crear_administrativo(ITBA), lambda : Administrativo.menu_registro_administrativo(ITBA)])
@@ -24,7 +24,7 @@ def menu_principal():
     print('Saliste del menu')
 
 Leo = Alumno("Leonel Scalise",43046873,"M","fecha",62523,[],[],"fecha","negocios","vigente")
-Fede = Alumno("Juana Santacreu",4112893,"F","fecha",234234,[],[],"fecha","negocios","vigente")
+Juana = Alumno("Juana Santacreu",4112893,"F","fecha",234234,[],[],"fecha","negocios","vigente")
 Mati = Alumno("Matías Díaz Cantón",43573875,"M","fecha",62473,[],[],"fecha","negocios","vigente")
 
 ElAdmin = Administrativo("El Admin",4112893,"M","fecha",10000,"FECHA INGRESO",[],[])  # nombre_apellido, dni, sexo, fecha_nac, legajo, fecha_ingreso, tramites_abiertos, tramites_resueltos, fecha_baja=None
@@ -33,12 +33,15 @@ ElAdmin = Administrativo("El Admin",4112893,"M","fecha",10000,"FECHA INGRESO",[]
 ITBA = Institucion("ITBA", "Pepe")
 
 ITBA.agregar_alumno(Leo)
-ITBA.agregar_alumno(Fede)
+ITBA.agregar_alumno(Juana)
 ITBA.agregar_alumno(Mati)
 
 ITBA.agregar_administrativo(ElAdmin)
 
+
 menu_principal()
+
+
 
 
 

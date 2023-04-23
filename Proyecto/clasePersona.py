@@ -1,11 +1,10 @@
 from validador import *
 from armado_menu import *
 from claseInstitucion import *
+from validadorLegajo import *
 import os
 
 clear = lambda : os.system('cls')
-
-
 
 class Persona:
   def __init__(self, nombre_apellido, dni, sexo, fecha_nac):
@@ -18,14 +17,18 @@ class Alumno(Persona):
 
   def menu_registro_alumno(institucion:Institucion):
     x = "o"
-    legajo_ingresado = int(input("Ingrese su numero de legajo: "))
     clear()
+
+    legajo_ingresado = validadorLegajo(institucion)
+
     for alumno in institucion.alumnos:
         if alumno.legajo == legajo_ingresado:
           if alumno.sexo == "F":
             x = "a"
           print(f"Bienvenid{x} {alumno.nombre_apellido}")
-
+          break
+  
+    
 
   def __init__(self, nombre_apellido, dni, sexo, fecha_nac, legajo, materias_aprobadas, materias_en_curso, fecha_ingreso, carrera, estado_alumno, creditos_aprobados=0):
     super().__init__(nombre_apellido, dni, sexo, fecha_nac)

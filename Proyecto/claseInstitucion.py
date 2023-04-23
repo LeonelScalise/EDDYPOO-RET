@@ -9,6 +9,7 @@ class Institucion():
         self.alumnos = []
         self.profesores = []
         self.administrativos = []
+        self.legajos = []
     
     def buscar_alumno(self, legajo):
         for alumno in self.alumnos:
@@ -19,16 +20,19 @@ class Institucion():
     def agregar_alumno(self, alumno):
         
         self.alumnos.append(alumno)
+        self.legajos.append(alumno.legajo)
         print("Alumno agregado")
 
     def agregar_profesor(self, profesor):
         
         self.profesores.append(profesor)
+        self.legajos.append(profesor.legajo)
         print("Profesor agregado")
     
     def agregar_administrativo(self, administrativo):
         
         self.administrativos.append(administrativo)
+        self.legajos.append(administrativo.legajo)
         print("Administrativo agregado")
 
             
