@@ -10,6 +10,8 @@ def validadorLegajo(institucion):
         try: #intenta pedir una respuesta
             legajoingresado = int(input("Ingrese su numero de legajo: "))
             clear()
+            if len(str(legajoingresado)) != 5:
+                raise Exception("\nEl legajo debe ser un numero de 5 digitos.\n") 
             if legajoingresado not in institucion.legajos:
                 raise Exception("\nEl legajo no existe, intente nuevamente.\n") #si no cumple con la condición que se indica levanta un error con un mensaje
             else:
