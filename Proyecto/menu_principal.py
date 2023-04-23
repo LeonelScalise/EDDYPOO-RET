@@ -8,7 +8,8 @@ clear = lambda : os.system('cls')
 def menu_principal():
     inicio = True
     while inicio:
-        arranque = int(input("\n\t\tMENU PRINCIPAL\n\n1. Administrativo\n2. Alumno\n3. Profesor\n4. Salir\n\nSeleccione una opcion: ")) #Hay que validar este input
+        print("\n\t\tMENU PRINCIPAL\n\n1. Administrativo\n2. Alumno\n3. Profesor\n4. Salir")
+        arranque = validador(4)
         clear()
         if arranque == 1:
             armado_menu("MENU ADMINISTRATIVO", ["Crear administrativo", "Iniciar sesion", "Salir"], [lambda : Administrativo.crear_administrativo(ITBA), lambda : Administrativo.menu_registro_administrativo(ITBA)])
