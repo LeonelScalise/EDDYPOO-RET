@@ -1,7 +1,21 @@
 from claseInstitucion import *
 import os
+from armado_menu import *
 
 clear = lambda : os.system('cls')
+
+
+def reintento():
+    print("1. Reintentar\n2. Volver")
+    eleccion = validador(2)
+    if eleccion == 1:
+        clear()
+        return True
+    elif eleccion == 2:
+        clear()
+        return False
+        
+    
 
 def validadorLegajo(institucion):
     inicio = True
@@ -18,7 +32,8 @@ def validadorLegajo(institucion):
                 inicio = False #frena el loop si está todo ok
         except ValueError: #si ingresan un tipo de dato incorrecto no se rompe el sistema sino que te vuelve a pedir una rta.
             print('\nEl dato introducido no corresponde al valor esperado.\n')
+            inicio = reintento()
         except Exception as e: 
-            print(e) #imprime el mensaje que vos indicaste antes
-    
+            print(e)      #imprime el mensaje que vos indicaste antes
+            inicio = reintento() 
     return legajoingresado
