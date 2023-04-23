@@ -25,14 +25,14 @@ class Alumno(Persona):
         if alumno.legajo == legajo_ingresado:
           if alumno.sexo == "F":
             x = "a"
-          print(f"Bienvenid{x} {alumno.nombre_apellido}")
-          break
+          return armado_menu(f"Bienvenid{x} {alumno.nombre_apellido}", ["Inscripcion a materias", "Iniciar Tramite", "Volver"], ['', ''])
+          
   
     
 
   def __init__(self, nombre_apellido, dni, sexo, fecha_nac, legajo, materias_aprobadas, materias_en_curso, fecha_ingreso, carrera, estado_alumno, creditos_aprobados=0):
     super().__init__(nombre_apellido, dni, sexo, fecha_nac)
-    self.legajo = int(legajo)
+    self.legajo = legajo
     self.materias_aprobadas = []
     self.materias_en_curso = []
     self.fecha_ingreso = fecha_ingreso
@@ -56,13 +56,13 @@ class Alumno(Persona):
 class Profesor(Persona):
   def menu_registro_profesor(institucion:Institucion):
     x = "o"
-    legajo_ingresado = int(input("Ingrese su numero de legajo: "))
+    legajo_ingresado = validadorLegajo(institucion)
     clear()
     for prof in institucion.profesores:
         if prof.legajo == legajo_ingresado:
           if prof.sexo == "F":
             x = "a"
-          print(f"Bienvenid{x} {prof.nombre_apellido}")
+          return armado_menu(f"Bienvenid{x} {prof.nombre_apellido}", ["Subir nota final", "Iniciar Tramite", "Volver"], ['', ''])
 
 
   def __init__(self, nombre_apellido, dni, sexo, fecha_nac, legajo, fecha_ingreso, fecha_baja=None, comisiones_acargo=None):
@@ -89,14 +89,13 @@ class Administrativo(Persona):
 
   def menu_registro_administrativo(institucion:Institucion):
     x = "o"
-    legajo_ingresado = int(input("Ingrese su numero de legajo: "))
+    legajo_ingresado = validadorLegajo(institucion)
     clear()
     for admin in institucion.administrativos:
         if admin.legajo == legajo_ingresado:
           if admin.sexo == "F":
             x = "a"
-          print(f"Bienvenid{x} {admin.nombre_apellido}")
-
+          return armado_menu(f"Bienvenid{x} {admin.nombre_apellido}", ["Dar de alta alumno","Dar de baja alumno","Dar de alta profesor","Dar de baja profesor","Asignar titular de materia", "Tramites", "Volver"], ['', '', '','','',''])
   def __init__(self, nombre_apellido, dni, sexo, fecha_nac, legajo, fecha_ingreso, tramites_abiertos=[], tramites_resueltos=[], fecha_baja=None):
     super().__init__(nombre_apellido, dni, sexo, fecha_nac)
     self.legajo = legajo
