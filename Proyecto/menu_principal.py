@@ -30,7 +30,7 @@ Mati = Alumno("Matías Díaz Cantón",43573875,"M","fecha",62473,[],[],"fecha","
 
 Girafa = Profesor("Profe Girafale", 23, "M", "12/12/12", 35351, "11/12/12")  #(nombre_apellido, dni, sexo, fecha_nac, legajo, fecha_ingreso, fecha_baja=None, comisiones_acargo=None
 
-ElAdmin = Administrativo("El Admin",41741,"M","fecha",10000,"FECHA INGRESO",[],[])  # nombre_apellido, dni, sexo, fecha_nac, legajo, fecha_ingreso, tramites_abiertos, tramites_resueltos, fecha_baja=None
+ElAdmin = Administrativo("El Admin",41741,"M","fecha",10000,"FECHA INGRESO")  # nombre_apellido, dni, sexo, fecha_nac, legajo, fecha_ingreso, tramites_abiertos, tramites_resueltos, fecha_baja=None
  
 
 ITBA = Institucion("ITBA", "Pepe")
