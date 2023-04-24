@@ -25,7 +25,7 @@ class Alumno(Persona):
         if alumno.legajo == legajo_ingresado:
           if alumno.sexo == "F":
             x = "a"
-          return armado_menu(f"Bienvenid{x} {alumno.nombre_apellido}", ["Inscripcion a materias", "Iniciar Tramite", "Volver"], ['', ''])
+          return armado_menu(f"Bienvenid{x} {alumno.nombre_apellido}", ["Inscripcion a materias", "Iniciar Tramite", "Volver"], ["", lambda : Alumno.iniciarTramite(ITBA)])
           
   
     
