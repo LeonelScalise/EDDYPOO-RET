@@ -5,6 +5,7 @@ from validadorLegajo import *
 import os
 from claseTramite import *
 import random
+from popularInstitucion import ITBA
 
 clear = lambda : os.system('cls')
 
@@ -25,7 +26,7 @@ class Alumno(Persona):
         if alumno.legajo == legajo_ingresado:
           if alumno.sexo == "F":
             x = "a"
-          return armado_menu(f"Bienvenid{x} {alumno.nombre_apellido}", ["Inscripcion a materias", "Iniciar Tramite", "Volver"], ["", lambda : Alumno.iniciarTramite(ITBA)])
+          return armado_menu(f"Bienvenid{x} {alumno.nombre_apellido}", ["Inscripcion a materias", "Iniciar Tramite", "Volver"], ["", lambda : alumno.iniciarTramite(ITBA)])
           
   
     
@@ -47,8 +48,8 @@ class Alumno(Persona):
   
 
   def iniciarTramite(self,institucion):
-    #despues vemos como hacemos el tema de los id de tramite
     id_tramite = 0
+
     if len(institucion.historial_tramites)!= 0:
       id_tramite= institucion.historial_tramites[-1].id+1
     tipo_de_tramite = input("Ingrese el tipo de tramite: ")
@@ -59,7 +60,7 @@ class Alumno(Persona):
     administrativo_asignado.tramites_abiertos.append(nuevo_tramite)
     institucion.tramites_abiertos.append(nuevo_tramite)
     institucion.historial_tramites.append(nuevo_tramite) 
-    print(nuevo_tramite.id) 
+    return print("Ya iniciaste el tramite")
 
 class Profesor(Persona):
   def menu_registro_profesor(institucion:Institucion):
