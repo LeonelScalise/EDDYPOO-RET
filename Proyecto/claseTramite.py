@@ -1,3 +1,4 @@
+from clasePersona import *
 class Tramite():
     def __init__(self, id, alumno, administrativo, tipo_de_tramite, fecha_de_inicio, estado="Pendiente", comision=None):
         self.id = id
@@ -7,5 +8,12 @@ class Tramite():
         self.fecha_de_inicio = fecha_de_inicio
         self.estado = estado
         self.comision = comision
-        self.tramites_resueltos = []
-        self.tramites_abierto = []
+    
+    def __str__(self):
+        return "{} es un tramite del tipo: {}, creado por {} y el administrativo encargado es {}".format(self.id,self.tipo_de_tramite,self.alumno,self.administrativo)
+import random
+if __name__ == "__main__":
+    l=["Hola"]
+    print(len(l))
+    i_random=random.randint(0,len(l)-1)
+    print(l[i_random])

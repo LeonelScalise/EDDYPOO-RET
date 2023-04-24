@@ -3,6 +3,8 @@ from armado_menu import *
 from claseInstitucion import *
 from validadorLegajo import *
 import os
+from claseTramite import *
+import random
 
 clear = lambda : os.system('cls')
 
@@ -23,7 +25,7 @@ class Alumno(Persona):
         if alumno.legajo == legajo_ingresado:
           if alumno.sexo == "F":
             x = "a"
-          return armado_menu(f"Bienvenid{x} {alumno.nombre_apellido}", ["Inscripcion a materias", "Iniciar Tramite", "Volver"], ['', ''])
+          return armado_menu(f"Bienvenid{x} {alumno.nombre_apellido}", ["Inscripcion a materias", "Iniciar Tramite", "Volver"], ["", lambda : Alumno.iniciarTramite(ITBA)])
           
   
     
@@ -43,7 +45,21 @@ class Alumno(Persona):
   def __str__(self):
     return self.nombre_apellido
   
-    
+
+  def iniciarTramite(self,institucion):
+    #despues vemos como hacemos el tema de los id de tramite
+    id_tramite = 0
+    if len(institucion.historial_tramites)!= 0:
+      id_tramite= institucion.historial_tramites[-1].id+1
+    tipo_de_tramite = input("Ingrese el tipo de tramite: ")
+    cantidad_administrativos = len(institucion.administrativos)
+    i_random = random.randint(0,cantidad_administrativos-1)
+    administrativo_asignado=institucion.administrativos[i_random]
+    nuevo_tramite = Tramite(id_tramite,self,administrativo_asignado,tipo_de_tramite,"24/4/2023")
+    administrativo_asignado.tramites_abiertos.append(nuevo_tramite)
+    institucion.tramites_abiertos.append(nuevo_tramite)
+    institucion.historial_tramites.append(nuevo_tramite) 
+    print(nuevo_tramite.id) 
 
 class Profesor(Persona):
   def menu_registro_profesor(institucion:Institucion):
@@ -88,11 +104,41 @@ class Administrativo(Persona):
           if admin.sexo == "F":
             x = "a"
           return armado_menu(f"Bienvenid{x} {admin.nombre_apellido}", ["Dar de alta alumno","Dar de baja alumno","Dar de alta profesor","Dar de baja profesor","Asignar titular de materia", "Tramites", "Volver"], ['', '', '','','',''])
-  def __init__(self, nombre_apellido, dni, sexo, fecha_nac, legajo, fecha_ingreso, tramites_abiertos=[], tramites_resueltos=[], fecha_baja=None):
+  def __init__(self, nombre_apellido, dni, sexo, fecha_nac, legajo, fecha_ingreso, fecha_baja=None):
     super().__init__(nombre_apellido, dni, sexo, fecha_nac)
     self.legajo = legajo
     self.fecha_ingreso = fecha_ingreso
     self.fecha_baja = fecha_baja
-    self.tramites_abiertos = tramites_abiertos
-    self.tramites_resueltos = tramites_resueltos
+    self.tramites_abiertos = []
+    self.tramites_resueltos = []
     self.fecha_baja = fecha_baja
+  
+  def __str__(self):
+      return "{} es administrativo y tiene el legajo {}".format(self.nombre_apellido,self.legajo)
+
+
+
+if __name__=="__main__":
+  ITBA = Institucion("ITBA", "Pepe")
+
+  Leo = Alumno("leonel",4344893,"M","fecha","Legajo de leo",[],[],"fecha","negocios","vigente")
+  Fede = Alumno("fede",4112893,"M","fecha","Legajo de fede",[],[],"fecha","negocios","vigente")
+
+  administrativo_1=Administrativo("Nombre administrativo 1",45678901,"m","01/01/2000",61230,"01/01/2020")
+  administrativo_2=Administrativo("Nombre administrativo 2",46678902,"m","01/01/2001",61231,"02/02/2020")
+  administrativo_3=Administrativo("Nombre administrativo 3",47678903,"m","01/01/2002",61233,"03/03/2020")
+
+  ITBA.agregar_alumno(Leo)
+  ITBA.agregar_alumno(Fede)
+  ITBA.agregar_administrativo(administrativo_1)
+  ITBA.agregar_administrativo(administrativo_2)
+  ITBA.agregar_administrativo(administrativo_3)
+
+  Leo.iniciarTramite(ITBA)
+  Leo.iniciarTramite(ITBA)
+  Leo.iniciarTramite(ITBA)
+
+  print("-----------")
+  print(len(administrativo_1.tramites_abiertos))
+  print(len(administrativo_2.tramites_abiertos))
+  print(len(administrativo_3.tramites_abiertos))
