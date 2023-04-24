@@ -10,6 +10,9 @@ class Institucion():
         self.profesores = []
         self.administrativos = []
         self.legajos = []
+        self.tramites_resueltos = []
+        self.tramites_abiertos = []
+        self.historial_tramites = []
     
     def buscar_alumno(self, legajo):
         for alumno in self.alumnos:
