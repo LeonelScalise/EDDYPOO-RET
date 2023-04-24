@@ -8,8 +8,6 @@ class Tramite():
         self.fecha_de_inicio = fecha_de_inicio
         self.estado = estado
         self.comision = comision
-        self.tramites_resueltos = []
-        self.tramites_abierto = []
     
     def __str__(self):
         return "{} es un tramite del tipo: {}, creado por {} y el administrativo encargado es {}".format(self.id,self.tipo_de_tramite,self.alumno,self.administrativo)

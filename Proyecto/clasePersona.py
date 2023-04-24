@@ -48,16 +48,18 @@ class Alumno(Persona):
 
   def iniciarTramite(self,institucion):
     #despues vemos como hacemos el tema de los id de tramite
-    id_tramite = "00000001"
-    tipo_de_tramite = input("Ingrese el tipo de tramite ")
-    administrativo = None
+    id_tramite = 0
+    if len(institucion.historial_tramites)!= 0:
+      id_tramite= institucion.historial_tramites[-1].id+1
+    tipo_de_tramite = input("Ingrese el tipo de tramite: ")
     cantidad_administrativos = len(institucion.administrativos)
     i_random = random.randint(0,cantidad_administrativos-1)
     administrativo_asignado=institucion.administrativos[i_random]
     nuevo_tramite = Tramite(id_tramite,self,administrativo_asignado,tipo_de_tramite,"24/4/2023")
     administrativo_asignado.tramites_abiertos.append(nuevo_tramite)
-    nuevo_tramite.tramites_abierto.append(nuevo_tramite)
-    print(nuevo_tramite,nuevo_tramite.tramites_abierto)  
+    institucion.tramites_abiertos.append(nuevo_tramite)
+    institucion.historial_tramites.append(nuevo_tramite) 
+    print(nuevo_tramite.id) 
 
 class Profesor(Persona):
   def menu_registro_profesor(institucion:Institucion):
@@ -132,6 +134,8 @@ if __name__=="__main__":
   ITBA.agregar_administrativo(administrativo_2)
   ITBA.agregar_administrativo(administrativo_3)
 
+  Leo.iniciarTramite(ITBA)
+  Leo.iniciarTramite(ITBA)
   Leo.iniciarTramite(ITBA)
 
   print("-----------")
