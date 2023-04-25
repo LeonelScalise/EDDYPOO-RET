@@ -19,6 +19,6 @@ ITBA.agregar_profesor(Girafa)
 
 ITBA.agregar_administrativo(ElAdmin)
 
-# Leo.iniciarTramite(ITBA)
-# Leo.iniciarTramite(ITBA)
-# Leo.iniciarTramite(ITBA)
+Leo.iniciarTramite(ITBA)
+Leo.iniciarTramite(ITBA)
+Leo.iniciarTramite(ITBA)

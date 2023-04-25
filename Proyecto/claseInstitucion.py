@@ -14,10 +14,6 @@ class Institucion():
         self.tramites_abiertos = []
         self.historial_tramites = []
     
-    def buscar_alumno(self, legajo):
-        for alumno in self.alumnos:
-            if legajo == alumno.legajo:
-                return alumno
         
     
     def agregar_alumno(self, alumno):

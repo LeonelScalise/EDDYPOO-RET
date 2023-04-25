@@ -1,1 +1,1 @@
-lambda : Administrativo.crear_administrativo(ITBA), lambda : Administrativo.menu_registro_administrativo(ITBA)
+ print('Saliste del menu'
