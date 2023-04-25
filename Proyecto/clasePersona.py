@@ -128,11 +128,18 @@ class Administrativo(Persona):
     return lista_tramites
   
   def tacharTramite(self, id_tram):
-    for tramite in self.tramites_abiertos:
-      if tramite.id == id_tram:
-        self.tramites_abiertos.remove(tramite)
-    clear()
-    print("Tramite resuelto")
+      for tramite in self.tramites_abiertos:
+        if tramite.id == id_tram:
+          #Si esta, tengo que eliminarlo de las listas que estan en Institución y la propia lista del administrativo
+          ITBA.tramites_abiertos.remove(tramite)
+          self.tramites_abiertos.remove(tramite)
+        #Una vez que lo saco de las listas, tengo que cambiar el estado del tramite a "Resuelto"
+          tramite.estado="Resuelto"
+        #Una vez que le cambio el estado, tengo que poner el tramite en la lista de tramites resueltos de la Institución y el administrativo
+          ITBA.tramites_resueltos.append(tramite)
+          self.tramites_resueltos.append(tramite)
+          return print("El tramite {} ha sido resuelto".format(tramite.tipo_de_tramite))
+      clear()
     
     
 
