@@ -25,8 +25,9 @@ def menu_principal():
     
     print('Saliste del menu')
 
+lista = []
 
-
+print(lista == [])
 
 menu_principal()
 

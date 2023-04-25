@@ -104,7 +104,8 @@ class Administrativo(Persona):
         if admin.legajo == legajo_ingresado:
           if admin.sexo == "F":
             x = "a"
-          return armado_menu(f"Bienvenid{x} {admin.nombre_apellido}", ["Dar de alta alumno","Dar de baja alumno","Dar de alta profesor","Dar de baja profesor","Asignar titular de materia", "Tramites", "Volver"], ['', '', '','','',''])
+          return armado_menu(f"Bienvenid{x} {admin.nombre_apellido}", ["Dar de alta alumno","Dar de baja alumno","Dar de alta profesor","Dar de baja profesor","Asignar titular de materia", "Tramites", "Volver"], ['', '', '','','',lambda : admin.displayTramiteActivo()])
+        
   def __init__(self, nombre_apellido, dni, sexo, fecha_nac, legajo, fecha_ingreso, fecha_baja=None):
     super().__init__(nombre_apellido, dni, sexo, fecha_nac)
     self.legajo = legajo
@@ -117,7 +118,35 @@ class Administrativo(Persona):
   def __str__(self):
       return "{} es administrativo y tiene el legajo {}".format(self.nombre_apellido,self.legajo)
 
+  def  tramitesActivos(self):
+    lista_tramites = ["SALIR - NO HAY TRAMITES POR RESOLVER"]
+    if self.tramites_abiertos != []:
+      lista_tramites = []
+      for tramite in self.tramites_abiertos:
+        lista_tramites.append(tramite.tipo_de_tramite)
+      lista_tramites.append("Volver")
+    return lista_tramites
+  
+  def funcionResolverTramite(self, texto_tramite):
+    armado_menu(texto_tramite, ["Resolver tramite", "Volver"], [lambda : 2+2])
 
+  def resolverTramite(self):
+    lista_funciones = []
+    
+    def funcion_mascara(tramite):
+        return lambda: self.funcionResolverTramite(f'¿Quiere resolver el tramite "{tramite.tipo_de_tramite}" del alumno {tramite.alumno.nombre_apellido}?')
+    
+    for tramite in self.tramites_abiertos:
+        lista_funciones.append(funcion_mascara(tramite))
+    
+    return lista_funciones
+    
+
+
+  def displayTramiteActivo(self):
+    lista_tramites = self.tramitesActivos()
+    lista_funciones = self.resolverTramite()
+    armado_menu('Tramites pendientes', lista_tramites, lista_funciones)
 
 if __name__=="__main__":
   ITBA = Institucion("ITBA", "Pepe")
@@ -126,14 +155,14 @@ if __name__=="__main__":
   Fede = Alumno("fede",4112893,"M","fecha","Legajo de fede",[],[],"fecha","negocios","vigente")
 
   administrativo_1=Administrativo("Nombre administrativo 1",45678901,"m","01/01/2000",61230,"01/01/2020")
-  administrativo_2=Administrativo("Nombre administrativo 2",46678902,"m","01/01/2001",61231,"02/02/2020")
-  administrativo_3=Administrativo("Nombre administrativo 3",47678903,"m","01/01/2002",61233,"03/03/2020")
+  # administrativo_2=Administrativo("Nombre administrativo 2",46678902,"m","01/01/2001",61231,"02/02/2020")
+  # administrativo_3=Administrativo("Nombre administrativo 3",47678903,"m","01/01/2002",61233,"03/03/2020")
 
   ITBA.agregar_alumno(Leo)
   ITBA.agregar_alumno(Fede)
   ITBA.agregar_administrativo(administrativo_1)
-  ITBA.agregar_administrativo(administrativo_2)
-  ITBA.agregar_administrativo(administrativo_3)
+  # ITBA.agregar_administrativo(administrativo_2)
+  # ITBA.agregar_administrativo(administrativo_3)
 
   Leo.iniciarTramite(ITBA)
   Leo.iniciarTramite(ITBA)
@@ -141,5 +170,5 @@ if __name__=="__main__":
 
   print("-----------")
   print(len(administrativo_1.tramites_abiertos))
-  print(len(administrativo_2.tramites_abiertos))
-  print(len(administrativo_3.tramites_abiertos))
+  # print(len(administrativo_2.tramites_abiertos))
+  # print(len(administrativo_3.tramites_abiertos))
