@@ -127,14 +127,25 @@ class Administrativo(Persona):
       lista_tramites.append("Volver")
     return lista_tramites
   
-  def funcionResolverTramite(self, texto_tramite):
-    armado_menu(texto_tramite, ["Resolver tramite", "Volver"], [lambda : 2+2])
+  def tacharTramite(self, id_tram):
+    for tramite in self.tramites_abiertos:
+      if tramite.id == id_tram:
+        self.tramites_abiertos.remove(tramite)
+    clear()
+    print("Tramite resuelto")
+    
+    
 
-  def resolverTramite(self):
+  def resolverTramite(self, texto_tramite, id_tramite):
+    armado_menu(texto_tramite, ["Resolver tramite", "Volver"], [lambda : self.tacharTramite(id_tramite)])
+
+  
+  
+  def listaFuncTramite(self):
     lista_funciones = []
     
     def funcion_mascara(tramite):
-        return lambda: self.funcionResolverTramite(f'¿Quiere resolver el tramite "{tramite.tipo_de_tramite}" del alumno {tramite.alumno.nombre_apellido}?')
+        return lambda: self.resolverTramite(f'¿Quiere resolver el tramite "{tramite.tipo_de_tramite}" del alumno {tramite.alumno.nombre_apellido}?', tramite.id)
     
     for tramite in self.tramites_abiertos:
         lista_funciones.append(funcion_mascara(tramite))
@@ -145,7 +156,7 @@ class Administrativo(Persona):
 
   def displayTramiteActivo(self):
     lista_tramites = self.tramitesActivos()
-    lista_funciones = self.resolverTramite()
+    lista_funciones = self.listaFuncTramite()
     armado_menu('Tramites pendientes', lista_tramites, lista_funciones)
 
 if __name__=="__main__":
