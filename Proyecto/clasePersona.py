@@ -6,6 +6,7 @@ import os
 from claseTramite import *
 import random
 from popularInstitucion import ITBA
+from claseCarrera import *
 
 clear = lambda : os.system('cls')
 
@@ -26,9 +27,8 @@ class Alumno(Persona):
         if alumno.legajo == legajo_ingresado:
           if alumno.sexo == "F":
             x = "a"
-          return armado_menu(f"Bienvenid{x} {alumno.nombre_apellido}", ["Inscripcion a materias", "Iniciar Tramite", "Volver"], ["", lambda : alumno.iniciarTramite(ITBA)])
-          
-  
+          return armado_menu(f"Bienvenid{x} {alumno.nombre_apellido}", ["Inscripcion a materias", "Iniciar Tramite", "Volver"], [lambda : alumno.inscribirMateria(), lambda : alumno.iniciarTramite(ITBA)])
+
     
 
   def __init__(self, nombre_apellido, dni, sexo, fecha_nac, legajo, materias_aprobadas, materias_en_curso, fecha_ingreso, carrera, estado_alumno, creditos_aprobados=0):
@@ -50,8 +50,8 @@ class Alumno(Persona):
   def iniciarTramite(self,institucion):
     id_tramite = 0
 
-    if len(institucion.historial_tramites)!= 0:
-      id_tramite= institucion.historial_tramites[-1].id+1
+    if len(institucion.historial_tramites) != 0:
+      id_tramite= institucion.historial_tramites[-1].id + 1
     tipo_de_tramite = input("Ingrese el tipo de tramite: ")
     cantidad_administrativos = len(institucion.administrativos)
     i_random = random.randint(0,cantidad_administrativos-1)
@@ -61,6 +61,23 @@ class Alumno(Persona):
     institucion.tramites_abiertos.append(nuevo_tramite)
     institucion.historial_tramites.append(nuevo_tramite) 
     return print("Ya iniciaste el tramite")
+  
+  def inscribirMateria(self):
+    materias_disponibles = []
+    c = 0
+    for materia in self.carrera.materias:
+      if len(materia.correlativas) != 0:
+        for corre in materia.correlativas:
+          if corre in self.materias_aprobadas:
+            c += 1
+          if c == len(materia.correlativas) and materia not in self.materias_aprobadas and materia not in self.materias_en_curso:
+            materias_disponibles.append(materia.nombre)   
+      elif materia not in self.materias_aprobadas and materia not in self.materias_en_curso:
+        materias_disponibles.append(materia.nombre)
+
+    armado_menu(f"Materias disponibles para incripcion de {self.nombre_apellido}", materias_disponibles, [f"Se ha incripto a {materias_disponibles[0]} correctamente",f"Se ha incripto a {materias_disponibles[1]} correctamente"])
+
+        
 
 class Profesor(Persona):
   def menu_registro_profesor(institucion:Institucion):
@@ -105,6 +122,7 @@ class Administrativo(Persona):
           if admin.sexo == "F":
             x = "a"
           return armado_menu(f"Bienvenid{x} {admin.nombre_apellido}", ["Dar de alta alumno","Dar de baja alumno","Dar de alta profesor","Dar de baja profesor","Asignar titular de materia", "Tramites", "Volver"], ['', '', '','','',''])
+        
   def __init__(self, nombre_apellido, dni, sexo, fecha_nac, legajo, fecha_ingreso, fecha_baja=None):
     super().__init__(nombre_apellido, dni, sexo, fecha_nac)
     self.legajo = legajo
@@ -113,6 +131,13 @@ class Administrativo(Persona):
     self.tramites_abiertos = []
     self.tramites_resueltos = []
     self.fecha_baja = fecha_baja
+
+  
+  def asignarProfesor(self):
+    pass
+    
+
+
   
   def __str__(self):
       return "{} es administrativo y tiene el legajo {}".format(self.nombre_apellido,self.legajo)

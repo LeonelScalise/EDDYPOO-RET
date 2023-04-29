@@ -1,5 +1,5 @@
 class Materia:
-    def init(self, codigo_materia, nombre, creditos, sede, departamento, titular, correlativas=[]):
+    def __init__(self, codigo_materia, nombre, creditos, sede, departamento, titular, correlativas=[]):
         self.codigo_materia = codigo_materia
         self.nombre = nombre
         self.creditos = creditos
@@ -10,6 +10,6 @@ class Materia:
         self.comisiones = []
 
     def str(self):
-        return f"{self.codigo_materia} - {self.nombre}"
+        return f"{self.codigo_materia} - {self.nombre}"
     
 

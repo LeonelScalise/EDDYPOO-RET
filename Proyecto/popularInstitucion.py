@@ -1,2 +1,3 @@
 from claseInstitucion import *
-ITBA=Institucion("ITBA","Pepe")
+
+ITBA = Institucion("ITBA","Pepe")

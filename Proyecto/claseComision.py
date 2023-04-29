@@ -1,5 +1,5 @@
 class Comision:
-    def init(self, codigo_comision, aula, profesor, ayudantes=[], dia_y_horario = {}, alumnos=[]):
+    def __init__(self, codigo_comision, aula, profesor, ayudantes=[], dia_y_horario = {}, alumnos=[]):
         self.codigo_comision = codigo_comision
         self.aula = aula
         self.cupos = aula.capacidad
