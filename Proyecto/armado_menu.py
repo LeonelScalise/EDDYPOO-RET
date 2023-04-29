@@ -1,4 +1,4 @@
-from validador import *
+from validadorInputs import *
 import os
 clear = lambda : os.system('cls') #para limpiar la terminal cada vez que se elija una opcion y aparezca lo nuevo
 
@@ -23,8 +23,3 @@ def armado_menu(nombre_menu, lista_opciones, lista_funciones): #arma los menus d
     
         # aca cuando cambias de usuario en iniciar sesion, lista_numeros tiene mas elementos entonces se bugea --> a chequear --> ya lo arregle
 
-
-        """     elif opcion_elegida == 1:
-                print(lista_funciones[0]) #si elige la primera, se ejecuta la funcion que esta en primera posicion de la lista de funciones de clase
-            elif opcion_elegida == 2:
-                print(lista_funciones[1]) #lo mismo pero para la segunda """
