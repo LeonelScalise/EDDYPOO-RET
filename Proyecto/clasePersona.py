@@ -1,4 +1,5 @@
-from validador import *
+from logging import raiseExceptions
+from validadorInputs import *
 from armado_menu import *
 from claseInstitucion import *
 from validadorLegajo import *
@@ -12,8 +13,23 @@ clear = lambda : os.system('cls')
 
 class Persona:
   def __init__(self, nombre_apellido, dni, sexo, fecha_nac):
+    # bandera=True
+    # while bandera:
+    #   try:
+    #     self.dni=int(dni)
+    #     if len(dni)<7:
+    #       raise Exception ("\nEl DNI no tiene los caracteres suficientes.\n")
+    #     else:
+    #       bandera=False
+    #   except ValueError: #si ingresan un tipo de dato incorrecto no se rompe el sistema sino que te vuelve a pedir una rta.
+    #         print('\nEl dato introducido no corresponde al valor esperado.\n')
+    #   except Exception as e: 
+    #         print(e) #imprime el mensaje que vos indicaste antes
+    while not dni.isdigit():
+        print("El dni debe ser un entero")
+        dni = input("Ingresar dni: ")
+    self.dni=dni
     self.nombre_apellido = nombre_apellido
-    self.dni = dni
     self.sexo = sexo
     self.fecha_nac = fecha_nac
 
@@ -21,7 +37,7 @@ class Alumno(Persona):
 
   def menu_registro_alumno(institucion:Institucion):
     x = "o"
-    legajo_ingresado = validadorLegajo(institucion)
+    legajo_ingresado = validadorLegajoAlumnos(institucion)
     clear()
     for alumno in institucion.alumnos:
         if alumno.legajo == legajo_ingresado:
@@ -73,7 +89,7 @@ class Alumno(Persona):
 class Profesor(Persona):
   def menu_registro_profesor(institucion:Institucion):
     x = "o"
-    legajo_ingresado = validadorLegajo(institucion)
+    legajo_ingresado = validadorLegajoProfe(institucion)
     clear()
     for prof in institucion.profesores:
         if prof.legajo == legajo_ingresado:
@@ -106,13 +122,13 @@ class Administrativo(Persona):
 
   def menu_registro_administrativo(institucion:Institucion):
     x = "o"
-    legajo_ingresado = validadorLegajo(institucion)
+    legajo_ingresado = validadorLegajoAdmin(institucion)
     clear()
     for admin in institucion.administrativos:
         if admin.legajo == legajo_ingresado:
           if admin.sexo == "F":
             x = "a"
-          return armado_menu(f"Bienvenid{x} {admin.nombre_apellido}", ["Dar de alta alumno","Dar de baja alumno","Dar de alta profesor","Dar de baja profesor","Asignar titular de materia", "Tramites", "Volver"], [lambda : admin.altaAlumno(), '', '','','',lambda : admin.displayTramiteActivo()])
+          return armado_menu(f"Bienvenid{x} {admin.nombre_apellido}", ["Dar de alta alumno","Dar de baja alumno","Dar de alta profesor","Dar de baja profesor","Asignar titular de materia", "Tramites", "Volver"], [lambda : admin.altaAlumno(), '', lambda : admin.altaProfesor(),'','',lambda : admin.displayTramiteActivo()])
         
   def __init__(self, nombre_apellido, dni, sexo, fecha_nac, legajo, fecha_ingreso, fecha_baja=None):
     super().__init__(nombre_apellido, dni, sexo, fecha_nac)
@@ -178,7 +194,10 @@ class Administrativo(Persona):
     dni = input("Ingrese el DNI del alumno: ")
     sexo = input("Ingrese el sexo del alumno: ")
     fecha_nacimiento= input("Ingrese la fecha de nacimiento del alumno: ")
-    legajo = ITBA.legajos[-1]+1
+    if len(ITBA.legajos_alumnos)!= 0:
+      legajo = ITBA.legajos_alumnos[-1]+1
+    else:
+      legajo=10000
     fecha_ingreso = input("Ingrese la fecha de ingreso del alumno: ")
     contador=1
     opciones=[]
@@ -200,6 +219,24 @@ class Administrativo(Persona):
     print("Se ha anotado al alumno a la carrera: ",alumno_nuevo.carrera.nombre)
     ITBA.agregar_alumno(alumno_nuevo)
     alumno_nuevo.carrera.alumnos_actuales.append(alumno_nuevo)
+
+  def altaProfesor(self):
+    nombre = input("Ingrese el nombre del profesor: ")
+    dni = input("Ingrese el DNI del profesor: ")
+    sexo = input("Ingrese el sexo del profesor: ")
+    fecha_nacimiento= input("Ingrese la fecha de nacimiento del profesor: ")
+    if len(ITBA.legajos_profesores)!= 0:
+      legajo_numero = int(ITBA.legajos_profesores[-1][2:])+1
+      legajo_alfa = "PR"
+      legajo= legajo_alfa+str(legajo_numero)
+    else:
+      legajo="PR10000"
+    fecha_ingreso = input("Ingrese la fecha de ingreso del profesor: ")
+
+    profesor_nuevo=Profesor(nombre,dni,sexo,fecha_nacimiento,legajo,fecha_ingreso)
+    ITBA.agregar_profesor(profesor_nuevo)
+
+
 
 if __name__=="__main__":
   ITBA = Institucion("ITBA", "Pepe")
@@ -228,10 +265,24 @@ if __name__=="__main__":
   ITBA.agregar_carrera(ingindustrial)
   ITBA.agregar_carrera(inginformatica)
 
-  administrativo_1.altaAlumno()
-  print(licnegocios.alumnos_actuales)
+  # administrativo_1.altaAlumno()
+  profe=Profesor("Pepe",1232141,"M","01/01/2020","PR10000","02/01/2020")
+  ITBA.agregar_profesor(profe)
+  administrativo_1.altaProfesor()
+  print(ITBA.profesores)
+  print(ITBA.legajos_profesores)
+
+  # print("Negocios")
+  # print(licnegocios.alumnos_actuales)
+  # print("Analitica")
+  # print(licnanalitica.alumnos_actuales)
+  # print("Ingenieria Industrial")
+  # print(ingindustrial.alumnos_actuales)
+  # print("Ingenieria Informatica")
+  # print(inginformatica.alumnos_actuales)
 
   print("-----------")
   print(len(administrativo_1.tramites_abiertos))
+  print()
   # print(len(administrativo_2.tramites_abiertos))
   # print(len(administrativo_3.tramites_abiertos))

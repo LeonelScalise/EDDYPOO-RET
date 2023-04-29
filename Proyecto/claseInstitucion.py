@@ -9,7 +9,9 @@ class Institucion():
         self.alumnos = []
         self.profesores = []
         self.administrativos = []
-        self.legajos = []
+        self.legajos_alumnos = []
+        self.legajos_profesores = []
+        self.legajos_administrativos=[]
         self.tramites_resueltos = []
         self.tramites_abiertos = []
         self.historial_tramites = []
@@ -19,19 +21,19 @@ class Institucion():
     def agregar_alumno(self, alumno):
         
         self.alumnos.append(alumno)
-        self.legajos.append(alumno.legajo)
+        self.legajos_alumnos.append(alumno.legajo)
         print("Alumno agregado")
 
     def agregar_profesor(self, profesor):
         
         self.profesores.append(profesor)
-        self.legajos.append(profesor.legajo)
+        self.legajos_profesores.append(profesor.legajo)
         print("Profesor agregado")
     
     def agregar_administrativo(self, administrativo):
         
         self.administrativos.append(administrativo)
-        self.legajos.append(administrativo.legajo)
+        self.legajos_administrativos.append(administrativo.legajo)
         print("Administrativo agregado")
     
     def agregar_carrera(self, carrera):

@@ -3,6 +3,7 @@ from armado_menu import *
 import os
 from clasePersona import *
 from popularPersona import *
+from validadorInputs import *
 clear = lambda : os.system('cls')
 
 
