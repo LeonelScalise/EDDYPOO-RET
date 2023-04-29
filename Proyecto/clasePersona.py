@@ -6,6 +6,7 @@ import os
 from claseTramite import *
 import random
 from popularInstitucion import ITBA
+from claseCarrera import *
 
 clear = lambda : os.system('cls')
 
@@ -30,8 +31,15 @@ class Alumno(Persona):
           
   
     
+#Borrar materias_aprobadas y materias_en_curso del INIT.
 
-  def __init__(self, nombre_apellido, dni, sexo, fecha_nac, legajo, materias_aprobadas, materias_en_curso, fecha_ingreso, carrera, estado_alumno, creditos_aprobados=0):
+#Pongo que carrera por predeterminado este vacio, porque no le puedo poner un input
+#de que ingrese la carrera del alumno, porque ahi tiene que haber un objeto carrera.
+#Entonces tengo que poner predeterminado vacio, y darle al administrativo las opciones
+#de carrera para que anote al alumno.
+#El estado del alumno tiene que ser "Activo" por defecto.
+
+  def __init__(self, nombre_apellido, dni, sexo, fecha_nac, legajo,fecha_ingreso,estado_alumno="Activo", carrera="", creditos_aprobados=0):
     super().__init__(nombre_apellido, dni, sexo, fecha_nac)
     self.legajo = legajo
     self.materias_aprobadas = []
@@ -104,7 +112,7 @@ class Administrativo(Persona):
         if admin.legajo == legajo_ingresado:
           if admin.sexo == "F":
             x = "a"
-          return armado_menu(f"Bienvenid{x} {admin.nombre_apellido}", ["Dar de alta alumno","Dar de baja alumno","Dar de alta profesor","Dar de baja profesor","Asignar titular de materia", "Tramites", "Volver"], ['', '', '','','',lambda : admin.displayTramiteActivo()])
+          return armado_menu(f"Bienvenid{x} {admin.nombre_apellido}", ["Dar de alta alumno","Dar de baja alumno","Dar de alta profesor","Dar de baja profesor","Asignar titular de materia", "Tramites", "Volver"], [lambda : admin.altaAlumno(), '', '','','',lambda : admin.displayTramiteActivo()])
         
   def __init__(self, nombre_apellido, dni, sexo, fecha_nac, legajo, fecha_ingreso, fecha_baja=None):
     super().__init__(nombre_apellido, dni, sexo, fecha_nac)
@@ -141,7 +149,6 @@ class Administrativo(Persona):
           return print("El tramite {} ha sido resuelto".format(tramite.tipo_de_tramite))
       clear()
     
-    
 
   def resolverTramite(self, texto_tramite, id_tramite):
     armado_menu(texto_tramite, ["Resolver tramite", "Volver"], [lambda : self.tacharTramite(id_tramite)])
@@ -159,32 +166,70 @@ class Administrativo(Persona):
     
     return lista_funciones
     
-
-
   def displayTramiteActivo(self):
     lista_tramites = self.tramitesActivos()
     lista_funciones = self.listaFuncTramite()
     armado_menu('Tramites pendientes', lista_tramites, lista_funciones)
 
+
+
+  def altaAlumno(self):
+    nombre = input("Ingrese el nombre del alumno: ")
+    dni = input("Ingrese el DNI del alumno: ")
+    sexo = input("Ingrese el sexo del alumno: ")
+    fecha_nacimiento= input("Ingrese la fecha de nacimiento del alumno: ")
+    legajo = ITBA.legajos[-1]+1
+    fecha_ingreso = input("Ingrese la fecha de ingreso del alumno: ")
+    contador=1
+    opciones=[]
+
+    alumno_nuevo=Alumno(nombre,dni,sexo,fecha_nacimiento,legajo,fecha_ingreso)
+    clear()
+    #Para que el administrativo anote al alumno en un objeto carrera
+    print(f'\n\t\t Ingrese la carrera del alumno\n')
+    for carrera in ITBA.carreras:
+      print(("{}. {}").format(contador,carrera.nombre))
+      opciones.append(contador)
+      contador+= 1
+    #Hay que validar la opción elegida
+    opcion_elegida = int(input("Ingrese la opción: "))
+    while opcion_elegida not in opciones:
+      opcion_elegida = int(input("Opción no valida, intente nuevamente: "))
+    alumno_nuevo.carrera = ITBA.carreras[opcion_elegida-1]
+    clear()
+    print("Se ha anotado al alumno a la carrera: ",alumno_nuevo.carrera.nombre)
+    ITBA.agregar_alumno(alumno_nuevo)
+    alumno_nuevo.carrera.alumnos_actuales.append(alumno_nuevo)
+
 if __name__=="__main__":
   ITBA = Institucion("ITBA", "Pepe")
 
-  Leo = Alumno("leonel",4344893,"M","fecha","Legajo de leo",[],[],"fecha","negocios","vigente")
-  Fede = Alumno("fede",4112893,"M","fecha","Legajo de fede",[],[],"fecha","negocios","vigente")
+  Leo = Alumno("leonel",4344893,"M","fecha",23456,"fecha")
+  Fede = Alumno("fede",4112893,"M","fecha",12345,"fecha")
 
   administrativo_1=Administrativo("Nombre administrativo 1",45678901,"m","01/01/2000",61230,"01/01/2020")
   # administrativo_2=Administrativo("Nombre administrativo 2",46678902,"m","01/01/2001",61231,"02/02/2020")
   # administrativo_3=Administrativo("Nombre administrativo 3",47678903,"m","01/01/2002",61233,"03/03/2020")
-
-  ITBA.agregar_alumno(Leo)
-  ITBA.agregar_alumno(Fede)
   ITBA.agregar_administrativo(administrativo_1)
   # ITBA.agregar_administrativo(administrativo_2)
   # ITBA.agregar_administrativo(administrativo_3)
 
-  Leo.iniciarTramite(ITBA)
-  Leo.iniciarTramite(ITBA)
-  Leo.iniciarTramite(ITBA)
+  # Leo.iniciarTramite(ITBA)
+  # Leo.iniciarTramite(ITBA)
+  # Leo.iniciarTramite(ITBA)
+
+  licnegocios=Carrera("Negocios",196,"Luis")
+  licnanalitica=Carrera("Analitica",196,"Juan")
+  inginformatica=Carrera("Ingenieria Informatica",250,"Mario")
+  ingindustrial=Carrera("Ingenieria Industrial",250,"Andres")
+
+  ITBA.agregar_carrera(licnegocios)
+  ITBA.agregar_carrera(licnanalitica)
+  ITBA.agregar_carrera(ingindustrial)
+  ITBA.agregar_carrera(inginformatica)
+
+  administrativo_1.altaAlumno()
+  print(licnegocios.alumnos_actuales)
 
   print("-----------")
   print(len(administrativo_1.tramites_abiertos))

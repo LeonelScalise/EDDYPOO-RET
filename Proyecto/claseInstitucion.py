@@ -33,6 +33,11 @@ class Institucion():
         self.administrativos.append(administrativo)
         self.legajos.append(administrativo.legajo)
         print("Administrativo agregado")
+    
+    def agregar_carrera(self, carrera):
+        
+        self.carreras.append(carrera)
+        print("Carrera agregada")
 
             
 """ 
