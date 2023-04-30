@@ -105,7 +105,7 @@ class Alumno(Persona):
 class Profesor(Persona):
   def menu_registro_profesor(institucion:Institucion):
     x = "o"
-    legajo_ingresado = validadorLegajoProfe(institucion)
+    legajo_ingresado = validadorLegajoAdminyProf(institucion, 'prof')
     clear()
     for prof in institucion.profesores:
         if prof.legajo == legajo_ingresado:
@@ -138,7 +138,7 @@ class Administrativo(Persona):
 
   def menu_registro_administrativo(institucion:Institucion):
     x = "o"
-    legajo_ingresado = validadorLegajoAdmin(institucion)
+    legajo_ingresado = validadorLegajoAdminyProf(institucion)
     clear()
     for admin in institucion.administrativos:
         if admin.legajo == legajo_ingresado:
