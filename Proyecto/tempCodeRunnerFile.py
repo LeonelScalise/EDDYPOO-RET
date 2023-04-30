@@ -1,1 +1,0 @@
- print('Saliste del menu'

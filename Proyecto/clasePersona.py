@@ -54,7 +54,7 @@ class Alumno(Persona):
 #de carrera para que anote al alumno.
 #El estado del alumno tiene que ser "Activo" por defecto.
 
-  def __init__(self, nombre_apellido, dni, sexo, fecha_nac, legajo,fecha_ingreso,estado_alumno="Activo", carrera="", creditos_aprobados=0):
+  def __init__(self, nombre_apellido, dni, sexo, fecha_nac, legajo,fecha_ingreso,estado_alumno="Activo", carrera=None, creditos_aprobados=0):
     super().__init__(nombre_apellido, dni, sexo, fecha_nac)
     self.legajo = legajo
     self.materias_aprobadas = []
@@ -144,11 +144,7 @@ class Administrativo(Persona):
         if admin.legajo == legajo_ingresado:
           if admin.sexo == "F":
             x = "a"
-<<<<<<< HEAD
-          return armado_menu(f"Bienvenid{x} {admin.nombre_apellido}", ["Dar de alta alumno","Dar de baja alumno","Dar de alta profesor","Dar de baja profesor","Asignar titular de materia", "Tramites", "Volver"], ['', '', '','','',''])
-=======
           return armado_menu(f"Bienvenid{x} {admin.nombre_apellido}", ["Dar de alta alumno","Dar de baja alumno","Dar de alta profesor","Dar de baja profesor","Asignar titular de materia", "Tramites", "Volver"], [lambda : admin.altaAlumno(), '', lambda : admin.altaProfesor(),'','',lambda : admin.displayTramiteActivo()])
->>>>>>> f5c2483c238d8afc598041aac88e307d02f99351
         
   def __init__(self, nombre_apellido, dni, sexo, fecha_nac, legajo, fecha_ingreso, fecha_baja=None):
     super().__init__(nombre_apellido, dni, sexo, fecha_nac)

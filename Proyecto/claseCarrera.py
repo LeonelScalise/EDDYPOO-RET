@@ -1,9 +1,9 @@
 from claseMateria import *
 
 class Carrera():
-    def __init__(self,nombre,director_carrera):
+    def __init__(self,nombre, director_carrera, creditos_para_recibirse = 0):
         self.nombre = nombre
-        self.creditos_para_recibirse = 0
+        self.creditos_para_recibirse = creditos_para_recibirse
         self.director_carrera = director_carrera
         self.materias = []
         self.alumnos_actuales = []
