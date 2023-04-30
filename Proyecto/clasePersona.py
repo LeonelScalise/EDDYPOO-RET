@@ -159,7 +159,7 @@ class Administrativo(Persona):
         if admin.legajo == legajo_ingresado:
           if admin.sexo == "F":
             x = "a"
-          return armado_menu(f"Bienvenid{x} {admin.nombre_apellido}", ["Dar de alta alumno","Dar de baja alumno","Dar de alta profesor","Dar de baja profesor", "Tramites", "Volver"], [lambda : admin.altaAlumno(), lambda : admin.bajaAlumno(), lambda : admin.altaProfesor(),'',lambda : admin.displayTramiteActivo()])
+          return armado_menu(f"Bienvenid{x} {admin.nombre_apellido}", ["Dar de alta alumno","Dar de baja alumno","Dar de alta profesor","Dar de baja profesor", "Tramites","Crear Comisión", "Volver"], [lambda : admin.altaAlumno(), lambda : admin.bajaAlumno(), lambda : admin.altaProfesor(),'',lambda : admin.displayTramiteActivo(),lambda:admin.displayMateriasITBA()])
         
   def __init__(self, nombre_apellido, dni, sexo, fecha_nac, legajo, fecha_ingreso, fecha_baja=None):
     super().__init__(nombre_apellido, dni, sexo, fecha_nac)
@@ -292,7 +292,37 @@ class Administrativo(Persona):
       if profesor.legajo==int(legajo_profesor):
         ITBA.profesores.remove(profesor)
         
+  
+  def crearComision(self,materia:Materia):
+
+    codigo_comision = input("Ingrese el codigo de la comisión que desee crear: ")
+    aula = input("Ingrese el aula de la Comisión: ")
+    profesor_asignado = validadorLegajoAdminyProf(ITBA,"prof")
+    dia = input("Ingrese el/los dia/s de la semana separados por (,): ").upper().replace(" ","").split(",")
+    horario = input("Ingrese el/los horario/s respectivamente a los dias ingresados previamente.(Ejemplo: 10:30 - 12:40): ").replace(" ","").split(",")
+    dia_horario = {"Dia":dia,"Horario":horario}
     
+    comision = Comision(codigo_comision,aula,profesor_asignado,materia,dia_horario)
+    materia.comisiones.append(comision)
+
+  def displayMateriasITBA(self):
+    contador=1
+    opciones=[]
+    materias=[]
+    for carrera in ITBA.carreras:
+      for materia_de_carrera in carrera.materias:
+        materias.append(materia_de_carrera)
+    for materia in materias:
+      print(("{}. {} {}").format(contador,materia.codigo_materia,materia.nombre))
+      opciones.append(contador)
+      contador+= 1
+    #Hay que validar la opción elegida
+    opcion_elegida = validador(contador)
+    self.crearComision(materias[opcion_elegida-1])
+    clear()
+  
+  
+  
 
 
 
