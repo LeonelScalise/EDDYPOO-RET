@@ -75,7 +75,7 @@ class Alumno(Persona):
 
     if len(institucion.historial_tramites) != 0:
       id_tramite= institucion.historial_tramites[-1].id + 1
-    tipo_de_tramite = input("Ingrese el tipo de tramite: ")
+    tipo_de_tramite = input("Ingrese el motivo del tramite: ")
     cantidad_administrativos = len(institucion.administrativos)
     i_random = random.randint(0,cantidad_administrativos-1)
     administrativo_asignado=institucion.administrativos[i_random]
@@ -111,7 +111,7 @@ class Profesor(Persona):
         if prof.legajo == legajo_ingresado:
           if prof.sexo == "F":
             x = "a"
-          return armado_menu(f"Bienvenid{x} {prof.nombre_apellido}", ["Subir nota final", "Iniciar Tramite", "Volver"], ['', ''])
+          return armado_menu(f"Bienvenid{x} {prof.nombre_apellido}", ["Subir nota final", "Iniciar Tramite", "Volver"], ['', lambda: prof.iniciarTramite(ITBA)])
 
 
   def __init__(self, nombre_apellido, dni, sexo, fecha_nac, legajo, fecha_ingreso, fecha_baja=None, comisiones_acargo=None):
@@ -119,7 +119,22 @@ class Profesor(Persona):
     self.legajo = legajo
     self.fecha_ingreso = fecha_ingreso
     self.fecha_baja = fecha_baja
-    self.comisiones_acargo = []  
+    self.comisiones_acargo = []
+
+  def iniciarTramite(self,institucion):
+    id_tramite = 0
+
+    if len(institucion.historial_tramites) != 0:
+      id_tramite= institucion.historial_tramites[-1].id + 1
+    tipo_de_tramite = input("Ingrese el motivo del tramite: ")
+    cantidad_administrativos = len(institucion.administrativos)
+    i_random = random.randint(0,cantidad_administrativos-1)
+    administrativo_asignado=institucion.administrativos[i_random]
+    nuevo_tramite = Tramite(id_tramite,self,administrativo_asignado,tipo_de_tramite,"24/4/2023")
+    administrativo_asignado.tramites_abiertos.append(nuevo_tramite)
+    institucion.tramites_abiertos.append(nuevo_tramite)
+    institucion.historial_tramites.append(nuevo_tramite) 
+    return print("Ya iniciaste el tramite")
 
 class Administrativo(Persona):
   def crear_administrativo(institucion:Institucion):
@@ -144,7 +159,7 @@ class Administrativo(Persona):
         if admin.legajo == legajo_ingresado:
           if admin.sexo == "F":
             x = "a"
-          return armado_menu(f"Bienvenid{x} {admin.nombre_apellido}", ["Dar de alta alumno","Dar de baja alumno","Dar de alta profesor","Dar de baja profesor","Asignar titular de materia", "Tramites", "Volver"], [lambda : admin.altaAlumno(), '', lambda : admin.altaProfesor(),'','',lambda : admin.displayTramiteActivo()])
+          return armado_menu(f"Bienvenid{x} {admin.nombre_apellido}", ["Dar de alta alumno","Dar de baja alumno","Dar de alta profesor","Dar de baja profesor", "Tramites", "Volver"], [lambda : admin.altaAlumno(), lambda : admin.bajaAlumno(), lambda : admin.altaProfesor(),'',lambda : admin.displayTramiteActivo()])
         
   def __init__(self, nombre_apellido, dni, sexo, fecha_nac, legajo, fecha_ingreso, fecha_baja=None):
     super().__init__(nombre_apellido, dni, sexo, fecha_nac)
@@ -258,6 +273,27 @@ class Administrativo(Persona):
 
     profesor_nuevo=Profesor(nombre,dni,sexo,fecha_nacimiento,legajo,fecha_ingreso)
     ITBA.agregar_profesor(profesor_nuevo)
+
+  def bajaAlumno(self):
+    legajo_alumno=validadorLegajoAlumnos(ITBA)
+    for alumno in ITBA.alumnos:
+      if alumno.legajo==int(legajo_alumno):
+        print(ITBA.alumnos)
+        ITBA.alumnos.remove(alumno)
+        print(ITBA.alumnos)
+        print(alumno.carrera.alumnos_actuales)
+        alumno.carrera.alumnos_actuales.remove(alumno)
+        print(alumno.carrera.alumnos_actuales)
+
+
+  def bajaProfesor(self):
+    legajo_profesor=validadorLegajoAdminyProf(ITBA,"profe")
+    for profesor in ITBA.profesors:
+      if profesor.legajo==int(legajo_profesor):
+        ITBA.profesores.remove(profesor)
+        
+    
+
 
 
 

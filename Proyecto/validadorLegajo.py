@@ -24,7 +24,7 @@ def validadorLegajoAlumnos(institucion):
 
     while inicio: #arranca el loop
         try: #intenta pedir una respuesta
-            legajoingresado = int(input("Ingrese su numero de legajo: "))
+            legajoingresado = int(input("Ingrese el numero de legajo: "))
             clear()
             if len(str(legajoingresado)) != 5:
                 raise Exception("\nEl legajo debe ser un numero de 5 digitos.\n") 
