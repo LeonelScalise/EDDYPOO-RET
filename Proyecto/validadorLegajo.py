@@ -44,7 +44,7 @@ def validadorLegajoAdminyProf(institucion, rol = 'admin'):
     inicio = True
     while inicio: #arranca el loop
         try: #intenta pedir una respuesta
-            legajoingresado = input("Ingrese su legajo: ").upper()
+            legajoingresado = input("Ingrese el numero de legajo: ").upper()
             print(legajoingresado[:2])
             clear()
             if len(legajoingresado) != 7:
