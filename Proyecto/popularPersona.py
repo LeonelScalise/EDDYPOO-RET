@@ -3,6 +3,7 @@ from clasePersona import Alumno, Profesor, Administrativo
 from popularInstitucion import ITBA
 from popularCarrera import *
 from claseMateria import *
+from claseComision import *
 
 ITBA.agregar_carrera(licnegocios)
 ITBA.agregar_carrera(licnanalitica)
@@ -21,6 +22,11 @@ Analisis_matematico = Materia("55.22", "Analisis matematico", 3, "SDT", "Matemat
 Algebra = Materia("67.30", "Algebra", 6, "SDF", "Matematica")
 Microeconomia = Materia("43.74", "Microeconomia", 6, "SDF", "Economia", [Analisis_matematico, Algebra])
 
+comi1 = Comision("A", "201F", Girafa, {"dia":["Lunes"], "horario":["12:30-14:30"]})
+comi2 = Comision("B", "202F", Girafa, {"dia":["Lunes"], "horario":["12:30-14:30"]})
+
+Analisis_matematico.comisiones.append(comi1)
+Analisis_matematico.comisiones.append(comi2)
 
 ITBA.agregar_alumno(Leo)
 ITBA.agregar_alumno(Juana)

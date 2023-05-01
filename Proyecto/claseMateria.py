@@ -10,6 +10,8 @@ class Materia:
         self.departamento = departamento
         self.correlativas = correlativas
         self.comisiones = []
+        self.profesores = []
+        self.alumnos = []
 
     def str(self):
         return f"{self.codigo_materia} - {self.nombre}"
