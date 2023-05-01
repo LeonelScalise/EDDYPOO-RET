@@ -11,7 +11,7 @@ class Institucion():
         self.administrativos = []
         self.legajos_alumnos = []
         self.legajos_profesores = []
-        self.legajos_administrativos=[]
+        self.legajos_administrativos = []
         self.tramites_resueltos = []
         self.tramites_abiertos = []
         self.historial_tramites = []

@@ -37,14 +37,6 @@ class Alumno(Persona):
             x = "a"
           return armado_menu(f"Bienvenid{x} {alumno.nombre_apellido}", ["Inscripcion a materias", "Iniciar Tramite", "Volver"], [lambda : alumno.displayMateriasDisponibles(), lambda : alumno.iniciarTramite(ITBA)])
 
-    
-#Borrar materias_aprobadas y materias_en_curso del INIT.
-
-#Pongo que carrera por predeterminado este vacio, porque no le puedo poner un input
-#de que ingrese la carrera del alumno, porque ahi tiene que haber un objeto carrera.
-#Entonces tengo que poner predeterminado vacio, y darle al administrativo las opciones
-#de carrera para que anote al alumno.
-#El estado del alumno tiene que ser "Activo" por defecto.
 
   def __init__(self, nombre_apellido, dni, sexo, fecha_nac, legajo,fecha_ingreso,estado_alumno="Activo", carrera=None, creditos_aprobados=0):
     super().__init__(nombre_apellido, dni, sexo, fecha_nac)
@@ -201,17 +193,22 @@ class Profesor(Persona):
     self.subirNotaFinal(materias_activas[opcion_elegida - 1])
 
 class Administrativo(Persona):
-  def darAltadministrativo(institucion:Institucion):
+  def altaAdministrativo(institucion:Institucion):
+        
         nombre_apellido = input("Ingrese el nombre y apellido del administrativo: ")
         dni = input("Ingrese el DNI del empleado: ")
         fecha_nac = input("Ingrese la fecha de nacimiento: ")
         sexo = input("Ingrese el sexo: ")
-        legajo = input("Ingrese el legajo: ")
+        if len(ITBA.legajos_administrativos) != 0:
+          legajo_numero = int(ITBA.legajos_administrativos[-1][2:])+1
+          legajo_alfa = "AD"
+          legajo = legajo_alfa + str(legajo_numero)
+        else:
+          legajo="AD10000"
         fecha_ingreso = input(f'Ingrese la fecha de ingreso a {institucion.nombre}: ')
 
-        
-
         institucion.administrativos.append(Administrativo(nombre_apellido, dni, sexo, fecha_nac, legajo, fecha_ingreso))
+        institucion.legajos_administrativos.append(legajo)
         print(f'El administrativo {nombre_apellido} se ha creado correctamente')
         print(len(institucion.administrativos))
 
@@ -237,6 +234,7 @@ class Administrativo(Persona):
   
   def asignarProfesor(self):
     contador = 0
+    flag = False
     legajo_profesor = validadorLegajoAdminyProf(ITBA,"prof")
     materias_disponibles = []
     for profesor in ITBA.profesores:
@@ -249,9 +247,13 @@ class Administrativo(Persona):
         if len(materia.comisiones) > 0:
           for comision in materia.comisiones:
             if comision.profesor == None:
-              contador += 1
-              materias_disponibles.append(materia)
-              print(("{}. {} {}").format(contador, materia.codigo_materia, materia.nombre))
+              flag = True
+        if flag:
+          contador += 1
+          materias_disponibles.append(materia)
+          print(("{}. {} {}").format(contador, materia.codigo_materia, materia.nombre))
+          flag = False
+
     if len(materias_disponibles) == 0:
       print("Todas las materias tienen un profesor asignado")
     else:
@@ -264,7 +266,7 @@ class Administrativo(Persona):
       for comision in materia_elegida.comisiones:
         if comision.profesor == None:
           contador += 1
-          print(("{}. Comision {} de {}").format(contador, comision.codigo_comision, materia.nombre))
+          print(("{}. Comision {} de {}").format(contador, comision.codigo_comision, materia_elegida.nombre))
 
       opcion_elegida2 = validador(contador)
       comision_elegida = materia_elegida.comisiones[opcion_elegida2 - 1]
@@ -322,7 +324,6 @@ class Administrativo(Persona):
     lista_tramites = self.tramitesActivos()
     lista_funciones = self.listaFuncTramite()
     armado_menu('Tramites pendientes', lista_tramites, lista_funciones)
-
 
 
   def altaAlumno(self):
@@ -416,9 +417,11 @@ class Administrativo(Persona):
     opcion_elegida = validador(contador)
     materia_elegida = materias_total[opcion_elegida - 1]
     clear()
+    cod_comi = "A"
+    if len(materia_elegida.comisiones) != 0:
+      cod_comi = ascii_uppercase[len(materia_elegida.comisiones)]
 
     print(f"Creación de la comision para {materia_elegida.nombre}\n")
-    codigo_comision = input("Ingrese el codigo de la comisión que desee crear: ")
     aula = input("Ingrese el aula de la Comisión: ")
     profesor_asignado = validadorLegajoAdminyProf(ITBA,"prof")
     dia = input("Ingrese el/los dia/s de la semana separados por (,): ").upper().replace(" ","").split(",")
@@ -426,29 +429,13 @@ class Administrativo(Persona):
     dia_horario = {"Dia":dia,"Horario":horario}
     clear()
     
-    nueva_comision = Comision(codigo_comision, aula, profesor_asignado, dia_horario)
+    nueva_comision = Comision(cod_comi, aula, profesor_asignado, dia_horario)
 
     materia_elegida.comisiones.append(nueva_comision)
     materia_elegida.profesores.append(profesor_asignado)
 
     print(f"La comision {nueva_comision.codigo_comision} de {materia_elegida.nombre} fue creada correctamente ")
 
-
-  # def displayMateriasITBA(self):
-  #   contador = 0
-  #   materias = []
-    
-  #   for carrera in ITBA.carreras:
-  #     for materia_de_carrera in carrera.materias:
-  #       materias.append(materia_de_carrera)
-  #   for materia in materias:
-  #     contador += 1
-  #     print(("{}. {} {}").format(contador, materia.codigo_materia, materia.nombre))
-      
-  #   #Hay que validar la opción elegida
-  #   opcion_elegida = validador(contador)
-  #   self.crearComision(materias[opcion_elegida-1])
-  #   clear()
 
   def alumnos_actualesxCarrera(self):
    alumnos=[]
@@ -464,8 +451,6 @@ class Administrativo(Persona):
    plt.show()
   
   
-
-
 
 
 if __name__=="__main__":

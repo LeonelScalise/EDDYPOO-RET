@@ -14,7 +14,7 @@ def menu_principal():
         arranque = validador(4)
         clear()
         if arranque == 1:
-            armado_menu("MENU ADMINISTRATIVO", ["Dar alta administrativo", "Iniciar sesion", "Salir"], [lambda : Administrativo.darAltadministrativo(ITBA), lambda : Administrativo.menu_registro_administrativo(ITBA)])
+            armado_menu("MENU ADMINISTRATIVO", ["Dar alta administrativo", "Iniciar sesion", "Salir"], [lambda : Administrativo.altaAdministrativo(ITBA), lambda : Administrativo.menu_registro_administrativo(ITBA)])
         elif arranque == 2:
             armado_menu("MENU ALUMNO", ["Iniciar Sesion", "Salir"], [lambda : Alumno.menu_registro_alumno(ITBA)])
         elif arranque == 3:
