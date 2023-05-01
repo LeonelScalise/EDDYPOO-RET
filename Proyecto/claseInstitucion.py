@@ -22,6 +22,7 @@ class Institucion():
         
         self.alumnos.append(alumno)
         self.legajos_alumnos.append(alumno.legajo)
+        alumno.carrera.alumnos_actuales.append(alumno)
         print("Alumno agregado")
 
     def agregar_profesor(self, profesor):

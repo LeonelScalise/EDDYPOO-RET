@@ -8,24 +8,16 @@ from claseTramite import *
 import random
 from popularInstitucion import ITBA
 from claseCarrera import *
+from validadorNota import *
+import matplotlib.pyplot as plt
+
+
 
 clear = lambda : os.system('cls')
 
 class Persona:
   def __init__(self, nombre_apellido, dni, sexo, fecha_nac):
-    # bandera=True
-    # while bandera:
-    #   try:
-    #     self.dni=int(dni)
-    #     if len(dni)<7:
-    #       raise Exception ("\nEl DNI no tiene los caracteres suficientes.\n")
-    #     else:
-    #       bandera=False
-    #   except ValueError: #si ingresan un tipo de dato incorrecto no se rompe el sistema sino que te vuelve a pedir una rta.
-    #         print('\nEl dato introducido no corresponde al valor esperado.\n')
-    #   except Exception as e: 
-    #         print(e) #imprime el mensaje que vos indicaste antes
-    while not dni.isdigit():
+    while not str(dni).isdigit():
         print("El dni debe ser un entero")
         dni = input("Ingresar dni: ")
     self.dni=dni
@@ -61,7 +53,7 @@ class Alumno(Persona):
     self.materias_en_curso = []
     self.fecha_ingreso = fecha_ingreso
     self.carrera = carrera
-    self.historial_académico = {}
+    self.historial_academico = {}
     self.estado_alumno = estado_alumno
     self.tramites_pendientes = []
     self.tramites_resueltos = []
@@ -97,6 +89,7 @@ class Alumno(Persona):
     comision.alumnos.append(self)
     print(comision.alumnos[0].nombre_apellido)
     materia.alumnos.append(comision.alumnos[-1])
+    self.materias_en_curso.append(materia)
     clear()
     print(f"Te has inscripto correctamente a la comision {comision.codigo_comision} de la materia {materia.nombre}")
 
@@ -132,7 +125,7 @@ class Profesor(Persona):
         if prof.legajo == legajo_ingresado:
           if prof.sexo == "F":
             x = "a"
-          return armado_menu(f"Bienvenid{x} {prof.nombre_apellido}", ["Subir nota final", "Iniciar Tramite", "Volver"], ['', lambda: prof.iniciarTramite(ITBA)])
+          return armado_menu(f"Bienvenid{x} {prof.nombre_apellido}", ["Subir nota final", "Iniciar Tramite", "Volver"], [lambda : prof.displayMateriasActivas(), lambda: prof.iniciarTramite(ITBA)])
 
 
   def __init__(self, nombre_apellido, dni, sexo, fecha_nac, legajo, fecha_ingreso, fecha_baja=None, comisiones_a_cargo=None):
@@ -157,20 +150,10 @@ class Profesor(Persona):
     institucion.historial_tramites.append(nuevo_tramite) 
     return print("Ya iniciaste el tramite")
   
-  def subirNotaFinal(self, comision):
-    contador = 0
-    for alumno in comision.alumnos:
-      contador += 1
-      print(("{}. {}").format(contador, alumno.nombre_apellido))
-    
-    opcion_elegida = validador(contador)
-    clear()
-    alumno_elegido = comision.alumnos[opcion_elegida - 1]
-    #.........seguir
-  
-  def displayComisionesACargo(self, materia):
+  def subirNotaFinal(self, materia):
     comisiones_a_cargo = []
     contador = 0
+    print("Seleccione la comision a la que desea subir la nota final:\n")
     for comision in materia.comisiones:
       if self == comision.profesor:
         comisiones_a_cargo.append(comision)
@@ -180,14 +163,34 @@ class Profesor(Persona):
       print(("{}. Comision {} de {}").format(contador, comision.codigo_comision, materia.nombre))
 
     opcion_elegida = validador(contador)
+    comision_elegida = comisiones_a_cargo[opcion_elegida - 1]
     clear()
-    self.subirNotaFinal(comisiones_a_cargo[opcion_elegida - 1])
+
+    contador = 0
+    print("Seleccione el alumno al que desea subir la nota final:\n")
+    if len(comision_elegida.alumnos) != 0:
+      for alumno in comision_elegida.alumnos:
+        contador += 1
+        print(("{}. {}").format(contador, alumno.nombre_apellido))
+      opcion_elegida = validador(contador)
+      clear()
+      alumno_elegido = comision_elegida.alumnos[opcion_elegida - 1]
+      Nota_final = validadorNota()
+      alumno_elegido.historial_academico[materia.nombre] = Nota_final
+      if Nota_final > 4:
+        alumno_elegido.materias_aprobadas.append(materia)
+        print(f"La nota final se cargó correctamente. {alumno_elegido} aprobó {materia.nombre}")
+      else:
+        print(f"La nota final se cargó correctamente. {alumno_elegido} no aprobó {materia.nombre}")
+    else:
+      print("No hay alumnos en esta comision")
+    
 
   
   def displayMateriasActivas(self):
     contador = 0
     materias_activas = []
-    print("Materias a las que está inscripto, seleccione una:\n")
+    print("Materias a las que está inscripto\n")
     for carrera in ITBA.carreras:
       for materia in carrera.materias:
         if self in materia.profesores:
@@ -197,7 +200,7 @@ class Profesor(Persona):
       print(("{}. {} {}").format(contador, materia.codigo_materia, materia.nombre))
     opcion_elegida = validador(contador)
     clear()
-    self.displayComisionesACargo(materias_activas[opcion_elegida - 1])
+    self.subirNotaFinal(materias_activas[opcion_elegida - 1])
 
 class Administrativo(Persona):
   def crear_administrativo(institucion:Institucion):
@@ -222,7 +225,7 @@ class Administrativo(Persona):
         if admin.legajo == legajo_ingresado:
           if admin.sexo == "F":
             x = "a"
-          return armado_menu(f"Bienvenid{x} {admin.nombre_apellido}", ["Dar de alta alumno","Dar de baja alumno","Dar de alta profesor","Dar de baja profesor", "Tramites","Crear Comisión", "Volver"], [lambda : admin.altaAlumno(), lambda : admin.bajaAlumno(), lambda : admin.altaProfesor(),'',lambda : admin.displayTramiteActivo(),lambda:admin.displayMateriasITBA()])
+          return armado_menu(f"Bienvenid{x} {admin.nombre_apellido}", ["Dar de alta alumno","Dar de baja alumno","Dar de alta profesor","Dar de baja profesor", "Tramites","Crear Comisión","Distribución de alumnos por carrera", "Volver"], [lambda : admin.altaAlumno(), lambda : admin.bajaAlumno(), lambda : admin.altaProfesor(),'',lambda : admin.displayTramiteActivo(), lambda:admin.displayMateriasITBA(), lambda : admin.alumnos_actualesxCarrera()])
         
   def __init__(self, nombre_apellido, dni, sexo, fecha_nac, legajo, fecha_ingreso, fecha_baja=None):
     super().__init__(nombre_apellido, dni, sexo, fecha_nac)
@@ -378,7 +381,18 @@ class Administrativo(Persona):
     self.crearComision(materias[opcion_elegida-1])
     clear()
 
-  
+  def alumnos_actualesxCarrera(self):
+   alumnos=[]
+   carreras=[]
+   for carrera in ITBA.carreras:
+     c=0
+     carreras.append(carrera.nombre)
+     for alumno in carrera.alumnos_actuales:
+       c+=1
+     alumnos.append(c)
+   plt.pie(alumnos,labels=carreras,autopct='%1.1f%%')
+   plt.title(label="Alumnos por Carrera")
+   plt.show()
   
   
 

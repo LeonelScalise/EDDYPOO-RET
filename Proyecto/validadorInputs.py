@@ -1,5 +1,4 @@
 
-
 def validador(cant_opciones):
     inicio = True
 

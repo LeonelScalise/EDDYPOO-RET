@@ -21,8 +21,7 @@ def menu_principal():
             armado_menu("MENU PROFESOR", ["Iniciar Sesion", "Salir"], [lambda : Profesor.menu_registro_profesor(ITBA)])
         elif arranque == 4:
             inicio = False
-        
-                
+                       
     
     print('Saliste del menu')
 
