@@ -43,7 +43,7 @@ class Alumno(Persona):
         if alumno.legajo == legajo_ingresado:
           if alumno.sexo == "F":
             x = "a"
-          return armado_menu(f"Bienvenid{x} {alumno.nombre_apellido}", ["Inscripcion a materias", "Iniciar Tramite", "Volver"], [lambda : alumno.inscribirMateria(), lambda : alumno.iniciarTramite(ITBA)])
+          return armado_menu(f"Bienvenid{x} {alumno.nombre_apellido}", ["Inscripcion a materias", "Iniciar Tramite", "Volver"], [lambda : alumno.displayMateriasDisponibles(), lambda : alumno.iniciarTramite(ITBA)])
 
     
 #Borrar materias_aprobadas y materias_en_curso del INIT.
@@ -85,18 +85,45 @@ class Alumno(Persona):
     institucion.historial_tramites.append(nuevo_tramite) 
     return print("Ya iniciaste el tramite")
   
-  def inscribirMateria(self):
+  def inscribirMateria(self, comision):
+    comision.alumnos.append(self.alumno)
+    print(f"Te has inscripto correctamente a la comision {comision.codigo_comision} de la materia {comision.materia}")
+
+
+  def displayComisiones(self, materia):
+    contador = 1
+    opciones=[]
+    for comisiones in materia.comisiones:
+      print(("{}. {}: {}").format(contador,comisiones.codigo_comision,comisiones.dia_horario))
+      contador += 1
+    opcion_elegida = validador(contador)
+    self.inscribirMateria(materia.comisiones[opcion_elegida-1])
+    clear()
+
+
+  def displayMateriasDisponibles(self):
     materias_disponibles = []
-    c = 0
+    c1 = 0
+    c2 = 1
+    opciones=[]
     for materia in self.carrera.materias:
       if len(materia.correlativas) != 0:
         for corre in materia.correlativas:
           if corre in self.materias_aprobadas:
-            c += 1
-          if c == len(materia.correlativas) and materia not in self.materias_aprobadas and materia not in self.materias_en_curso:
-            materias_disponibles.append(materia.nombre)   
+            c1 += 1 #sirve para verificar si es igual a la cantidad de correlativas que tiene la materia, eso querría decir que tiene todas las correlativas aprobadas
+        if c1 == len(materia.correlativas) and materia not in self.materias_aprobadas and materia not in self.materias_en_curso:
+            materias_disponibles.append(materia)
       elif materia not in self.materias_aprobadas and materia not in self.materias_en_curso:
-        materias_disponibles.append(materia.nombre)
+        materias_disponibles.append(materia)
+
+    for materia in materias_disponibles:
+      print(("{}. {} {}").format(c2,materia.codigo_materia,materia.nombre))
+      opciones.append(c2)
+      c2 += 1
+    opcion_elegida = validador(c2)
+    print(f"Materias disponibles para incripcion de {self.nombre_apellido}")
+    self.inscribirMaterias(materias_disponibles[opcion_elegida-1])
+    clear()
 
     armado_menu(f"Materias disponibles para incripcion de {self.nombre_apellido}", materias_disponibles, [f"Se ha incripto a {materias_disponibles[0]} correctamente",f"Se ha incripto a {materias_disponibles[1]} correctamente"])
 
