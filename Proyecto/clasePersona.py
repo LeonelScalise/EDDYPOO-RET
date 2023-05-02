@@ -34,7 +34,7 @@ class Alumno(Persona):
         if alumno.legajo == legajo_ingresado:
           if alumno.sexo == "F":
             x = "a"
-          return armado_menu(f"Bienvenid{x} {alumno.nombre_apellido}", ["Inscripcion a materia", "Desinscripción a materia", "Iniciar Tramite", "Volver"], [lambda : alumno.displayMateriasDisponibles(), lambda : alumno.desinscribirMateria() , lambda : alumno.iniciarTramite(ITBA)])
+          return armado_menu(f"Bienvenid{x} {alumno.nombre_apellido}", ["Inscripcion a materia", "Desinscripción a materia", "Iniciar Tramite", "Estadisticas", "Volver"], [lambda : alumno.displayMateriasDisponibles(), lambda : alumno.desinscribirMateria() , lambda : alumno.iniciarTramite(ITBA), lambda : alumno.estadisticasAlumno()])
 
 
   def __init__(self, nombre_apellido, dni, sexo, fecha_nac, legajo,fecha_ingreso,estado_alumno="Activo", carrera=None, creditos_aprobados=0):
@@ -165,7 +165,21 @@ class Alumno(Persona):
     else:
       print("No se encuentra anotado en ninguna materia")
 
+  def estadisticasAlumno(self):
+    armado_menu("ESTADISTICAS DEL ALUMNO", ['Ver el promedio de la carrera', "Volver"], [lambda : self.verPromedioCarrera()])
+  
   def verPromedioCarrera(self):
+    suma = 0
+    cantidad_notas = 0
+    promedio = 0
+
+    for nota in self.historial_academico.values():
+      suma += nota
+      cantidad_notas += 1
+    
+    promedio = suma / cantidad_notas
+
+    return print(f"Promedio lineal de la carrera: {promedio}")
     
 
 class Profesor(Persona):
@@ -180,7 +194,7 @@ class Profesor(Persona):
           return armado_menu(f"Bienvenid{x} {prof.nombre_apellido}", ["Subir nota final", "Iniciar Tramite", "Volver"], [lambda : prof.displayMateriasActivas(), lambda: prof.iniciarTramite(ITBA)])
 
 
-  def __init__(self, nombre_apellido, dni, sexo, fecha_nac, legajo, fecha_ingreso, fecha_baja=None, comisiones_a_cargo=None):
+  def __init__(self, nombre_apellido, dni, sexo, fecha_nac, legajo, fecha_ingreso, fecha_baja = None):
     super().__init__(nombre_apellido, dni, sexo, fecha_nac)
     self.legajo = legajo
     self.fecha_ingreso = fecha_ingreso
@@ -315,7 +329,7 @@ class Administrativo(Persona):
         if admin.legajo == legajo_ingresado:
           if admin.sexo == "F":
             x = "a"
-          return armado_menu(f"Bienvenid{x} {admin.nombre_apellido}", ["Dar de alta alumno", "Dar de baja alumno", "Dar de alta profesor", "Dar de baja profesor", "Tramites","Crear Comisión", "Asignar profesor a materia", "Desasignar profesor a materia","Distribución de alumnos por carrera", "Volver"], [lambda : admin.altaAlumno(), lambda : admin.bajaAlumno(), lambda : admin.altaProfesor(), lambda : admin.bajaProfesor(), lambda : admin.displayTramiteActivo(), lambda:admin.crearComision(), lambda : admin.asignarProfesor(), lambda : admin.desasignarProfesor(), lambda : admin.alumnos_actualesxCarrera()])
+          return armado_menu(f"Bienvenid{x} {admin.nombre_apellido}", ["Dar de alta alumno", "Dar de baja alumno", "Dar de alta profesor", "Dar de baja profesor", "Tramites","Crear Comisión", "Asignar profesor a materia", "Desasignar profesor a materia", "Estadisticas", "Volver"], [lambda : admin.altaAlumno(), lambda : admin.bajaAlumno(), lambda : admin.altaProfesor(), lambda : admin.bajaProfesor(), lambda : admin.displayTramiteActivo(), lambda:admin.crearComision(), lambda : admin.asignarProfesor(), lambda : admin.desasignarProfesor(), lambda : admin.estadisticasGenerales()])
         
   def __init__(self, nombre_apellido, dni, sexo, fecha_nac, legajo, fecha_ingreso, fecha_baja=None):
     super().__init__(nombre_apellido, dni, sexo, fecha_nac)
@@ -633,7 +647,10 @@ class Administrativo(Persona):
         print(f"La comision {nueva_comision.codigo_comision} de {materia_elegida.nombre} fue creada correctamente ")
 
 
-  def alumnos_actualesxCarrera(self):
+  def estadisticasGenerales(self):
+    armado_menu("ESTADISTICAS GENERALES", ['Alumnos actuales por carrera', "Volver"], [lambda : self.alumnosActualesxCarrera()])
+
+  def alumnosActualesxCarrera(self):
    alumnos=[]
    carreras=[]
    for carrera in ITBA.carreras:
@@ -642,8 +659,10 @@ class Administrativo(Persona):
      for alumno in carrera.alumnos_actuales:
        c += 1
      alumnos.append(c)
-   plt.pie(alumnos,labels=carreras,autopct='%1.1f%%')
-   plt.title(label="Alumnos por Carrera")
+   plt.pie(alumnos, labels=carreras, autopct='%1.1f%%')
+   plt.title(label = "Alumnos por Carrera")
    plt.show()
+
+  
   
   
