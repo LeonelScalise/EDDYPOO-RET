@@ -1,4 +1,3 @@
-from logging import raiseExceptions
 from validadorInputs import *
 from armado_menu import *
 from claseInstitucion import *
@@ -35,7 +34,7 @@ class Alumno(Persona):
         if alumno.legajo == legajo_ingresado:
           if alumno.sexo == "F":
             x = "a"
-          return armado_menu(f"Bienvenid{x} {alumno.nombre_apellido}", ["Inscripcion a materias", "Iniciar Tramite", "Volver"], [lambda : alumno.displayMateriasDisponibles(), lambda : alumno.iniciarTramite(ITBA)])
+          return armado_menu(f"Bienvenid{x} {alumno.nombre_apellido}", ["Inscripcion a materia", "Desinscripción a materia", "Iniciar Tramite", "Volver"], [lambda : alumno.displayMateriasDisponibles(), lambda : alumno.desinscribirMateria() , lambda : alumno.iniciarTramite(ITBA)])
 
 
   def __init__(self, nombre_apellido, dni, sexo, fecha_nac, legajo,fecha_ingreso,estado_alumno="Activo", carrera=None, creditos_aprobados=0):
@@ -73,39 +72,72 @@ class Alumno(Persona):
   def inscribirMateria(self, materia):
     contador = 0
     print(f"\t\t\nComisiones disponibles para incripcion en {materia.nombre}\n")
-    for comisiones in materia.comisiones:
-      contador += 1
-      print(("{}. {}: {}").format(contador, comisiones.codigo_comision, comisiones.dia_y_horario))
-    opcion_elegida = validador(contador)
-    comision = materia.comisiones[opcion_elegida - 1]
-    comision.alumnos.append(self)
-    print(comision.alumnos[0].nombre_apellido)
-    materia.alumnos.append(comision.alumnos[-1])
-    self.materias_en_curso.append(materia)
-    clear()
-    print(f"Te has inscripto correctamente a la comision {comision.codigo_comision} de la materia {materia.nombre}")
+    if len(materia.comisiones) != 0:
+      for comisiones in materia.comisiones:
+        contador += 1
+        print(("{}. {}: {}").format(contador, comisiones.codigo_comision, comisiones.dia_y_horario))
+      opcion_elegida = validador(contador)
+      comision = materia.comisiones[opcion_elegida - 1]
+      comision.alumnos.append(self)
+      print(comision.alumnos[0].nombre_apellido)
+      materia.alumnos.append(comision.alumnos[-1])
+      self.materias_en_curso.append(materia)
+      clear()
+      print(f"Te has inscripto correctamente a la comision {comision.codigo_comision} de la materia {materia.nombre}")
+    else:
+      print("La materia no posee comisiones por el momento")
 
   def displayMateriasDisponibles(self):
     materias_disponibles = []
     c1 = 0
     c2 = 0
-    print(f"\t\t\nMaterias disponibles para incripcion de {self.nombre_apellido}\n")
-    for materia in self.carrera.materias:
-      if len(materia.correlativas) != 0:
-        for corre in materia.correlativas:
-          if corre in self.materias_aprobadas:
-            c1 += 1 #sirve para verificar si es igual a la cantidad de correlativas que tiene la materia, eso querría decir que tiene todas las correlativas aprobadas
-        if c1 == len(materia.correlativas) and materia not in self.materias_aprobadas and materia not in self.materias_en_curso:
-            materias_disponibles.append(materia)
-      elif materia not in self.materias_aprobadas and materia not in self.materias_en_curso:
-        materias_disponibles.append(materia)
+    flag = True
+    while flag:
+      print(f"\t\t\nMaterias disponibles para incripcion de {self.nombre_apellido}\n")
+      for materia in self.carrera.materias:
+        if len(materia.correlativas) != 0:
+          for corre in materia.correlativas:
+            if corre in self.materias_aprobadas:
+              c1 += 1 #sirve para verificar si es igual a la cantidad de correlativas que tiene la materia, eso querría decir que tiene todas las correlativas aprobadas
+          if c1 == len(materia.correlativas) and materia not in self.materias_aprobadas and materia not in self.materias_en_curso:
+              materias_disponibles.append(materia)
+        elif materia not in self.materias_aprobadas and materia not in self.materias_en_curso:
+          materias_disponibles.append(materia)
 
-    for materia in materias_disponibles:
-      c2 += 1
-      print(("{}. {} {}").format(c2, materia.codigo_materia, materia.nombre))
-    opcion_elegida = validador(c2)
-    clear()
-    self.inscribirMateria(materias_disponibles[opcion_elegida - 1])
+      for materia in materias_disponibles:
+        c2 += 1
+        print(("{}. {} {}").format(c2, materia.codigo_materia, materia.nombre))
+
+      print(("{}. {}").format(c2 + 1, "Volver"))  
+      opcion_elegida = validador(c2 + 1)
+      clear()
+      if opcion_elegida == c2 + 1:
+        flag = False
+      else:
+        self.inscribirMateria(materias_disponibles[opcion_elegida - 1])
+        flag = False
+
+  def desinscribirMateria(self):
+    contador = 0
+    print("Materias en las que está inscripto\n")
+    if len(self.materias_en_curso) != 0:
+      for materia in self.materias_en_curso:
+        contador += 1
+        print(("{}. {} {}").format(contador, materia.codigo_materia, materia.nombre))
+
+      opcion_elegida = validador(contador)
+      materia_elegida = self.materias_en_curso[opcion_elegida - 1]
+      clear()
+      self.materias_en_curso.remove(materia_elegida)
+      materia_elegida.alumnos.remove(self)
+      for comision in materia_elegida.comisiones:
+          if self in comision.alumnos:
+            comision.alumnos.remove(self)
+      print(f"Ya no se encuentra inscripto en {materia_elegida.nombre}")
+
+    else:
+      print("No se encuentra anotado en ninguna materia")
+
         
 
 class Profesor(Persona):
@@ -193,6 +225,7 @@ class Profesor(Persona):
     self.subirNotaFinal(materias_activas[opcion_elegida - 1])
 
 class Administrativo(Persona):
+
   def altaAdministrativo(institucion:Institucion):
         
         nombre_apellido = input("Ingrese el nombre y apellido del administrativo: ")
@@ -334,9 +367,9 @@ class Administrativo(Persona):
     if len(ITBA.legajos_alumnos)!= 0:
       legajo = ITBA.legajos_alumnos[-1]+1
     else:
-      legajo=10000
+      legajo = 10000
     fecha_ingreso = input("Ingrese la fecha de ingreso del alumno: ")
-    contador=0
+    contador = 0
     
 
     alumno_nuevo = Alumno(nombre,dni,sexo,fecha_nacimiento,legajo,fecha_ingreso)
@@ -451,53 +484,3 @@ class Administrativo(Persona):
    plt.show()
   
   
-
-
-if __name__=="__main__":
-  ITBA = Institucion("ITBA", "Pepe")
-
-  Leo = Alumno("leonel",4344893,"M","fecha",23456,"fecha")
-  Fede = Alumno("fede",4112893,"M","fecha",12345,"fecha")
-
-  administrativo_1=Administrativo("Nombre administrativo 1",45678901,"m","01/01/2000",61230,"01/01/2020")
-  # administrativo_2=Administrativo("Nombre administrativo 2",46678902,"m","01/01/2001",61231,"02/02/2020")
-  # administrativo_3=Administrativo("Nombre administrativo 3",47678903,"m","01/01/2002",61233,"03/03/2020")
-  ITBA.agregar_administrativo(administrativo_1)
-  # ITBA.agregar_administrativo(administrativo_2)
-  # ITBA.agregar_administrativo(administrativo_3)
-
-  # Leo.iniciarTramite(ITBA)
-  # Leo.iniciarTramite(ITBA)
-  # Leo.iniciarTramite(ITBA)
-
-  licnegocios=Carrera("Negocios",196,"Luis")
-  licnanalitica=Carrera("Analitica",196,"Juan")
-  inginformatica=Carrera("Ingenieria Informatica",250,"Mario")
-  ingindustrial=Carrera("Ingenieria Industrial",250,"Andres")
-
-  ITBA.agregar_carrera(licnegocios)
-  ITBA.agregar_carrera(licnanalitica)
-  ITBA.agregar_carrera(ingindustrial)
-  ITBA.agregar_carrera(inginformatica)
-
-  # administrativo_1.altaAlumno()
-  profe=Profesor("Pepe",1232141,"M","01/01/2020","PR10000","02/01/2020")
-  ITBA.agregar_profesor(profe)
-  administrativo_1.altaProfesor()
-  print(ITBA.profesores)
-  print(ITBA.legajos_profesores)
-
-  # print("Negocios")
-  # print(licnegocios.alumnos_actuales)
-  # print("Analitica")
-  # print(licnanalitica.alumnos_actuales)
-  # print("Ingenieria Industrial")
-  # print(ingindustrial.alumnos_actuales)
-  # print("Ingenieria Informatica")
-  # print(inginformatica.alumnos_actuales)
-
-  print("-----------")
-  print(len(administrativo_1.tramites_abiertos))
-  print()
-  # print(len(administrativo_2.tramites_abiertos))
-  # print(len(administrativo_3.tramites_abiertos))

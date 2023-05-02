@@ -62,10 +62,3 @@ ITBA.agregar_administrativo(ElAdmin)
 licnegocios.agregar_materia(Analisis_matematico)
 licnegocios.agregar_materia(Algebra)
 licnegocios.agregar_materia(Microeconomia)
-
-# Leo.iniciarTramite(ITBA)
-# Leo.iniciarTramite(ITBA)
-# Leo.iniciarTramite(ITBA)
-
-# Analisis_matematico.crearComision()
-# print(Analisis_matematico.comisiones)

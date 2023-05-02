@@ -25,7 +25,7 @@ def validadorLegajoAlumnos(institucion):
     while inicio: #arranca el loop
         try: #intenta pedir una respuesta
             legajoingresado = int(input("Ingrese el numero de legajo: "))
-            clear()
+            
             if len(str(legajoingresado)) != 5:
                 raise Exception("\nEl legajo debe ser un numero de 5 digitos.\n") 
             if legajoingresado not in institucion.legajos_alumnos:
@@ -46,7 +46,7 @@ def validadorLegajoAdminyProf(institucion, rol = 'admin'):
         try: #intenta pedir una respuesta
             legajoingresado = input("Ingrese el numero de legajo: ").upper()
             print(legajoingresado[:2])
-            clear()
+            
             if len(legajoingresado) != 7:
                 raise Exception("\nEl legajo debe ser una cadena de 7 digitos.\n")
             if rol == 'prof':
