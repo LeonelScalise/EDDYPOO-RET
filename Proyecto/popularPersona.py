@@ -22,6 +22,8 @@ alumno6 = Alumno("alumno6","43577375","M","fecha",67773,"fecha","Activo",inginfo
 alumno7 = Alumno("alumno7","43045573","M","fecha",68823,"fecha","Activo",inginformatica)
 alumno8 = Alumno("alumno8","4112443","F","fecha",29024,"fecha","Activo",ingindustrial)
 alumno9 = Alumno("alumno9","43113875","M","fecha",60073,"fecha","Activo",licnegocios)
+alumno9.historial_academico.update({"materia 1":5,"materia 2":7,"materia 3":10,"materia 4":8,"materia 5":7,"materia 6":8,"materia 7":8,"materia 8":8,"materia 9":10})
+
 
 ITBA.agregar_alumno(alumno1)
 ITBA.agregar_alumno(alumno2)

@@ -348,7 +348,7 @@ class Administrativo(Persona):
         if admin.legajo == legajo_ingresado:
           if admin.sexo == "F":
             x = "a"
-          return armado_menu(f"Bienvenid{x} {admin.nombre_apellido}", ["Dar de alta alumno", "Dar de baja alumno", "Dar de alta profesor", "Dar de baja profesor", "Tramites","Crear Comisión", "Asignar profesor a materia", "Desasignar profesor a materia", "Estadisticas", "Volver"], [lambda : admin.altaAlumno(), lambda : admin.bajaAlumno(), lambda : admin.altaProfesor(), lambda : admin.bajaProfesor(), lambda : admin.displayTramiteActivo(), lambda:admin.crearComision(), lambda : admin.asignarProfesor(), lambda : admin.desasignarProfesor(), lambda : admin.estadisticasGenerales()])
+          return armado_menu(f"Bienvenid{x} {admin.nombre_apellido}", ["Dar de alta alumno", "Dar de baja alumno", "Dar de alta profesor", "Dar de baja profesor","Dar de baja Administrativo", "Tramites","Crear Comisión", "Asignar profesor a materia", "Desasignar profesor a materia", "Estadisticas", "Volver"], [lambda : admin.altaAlumno(), lambda : admin.bajaAlumno(), lambda : admin.altaProfesor(), lambda : admin.bajaProfesor(), lambda : admin.bajaAdministrativo(), lambda : admin.displayTramiteActivo(), lambda:admin.crearComision(), lambda : admin.asignarProfesor(), lambda : admin.desasignarProfesor(), lambda : admin.estadisticasGenerales()])
         
   def __init__(self, nombre_apellido, dni, sexo, fecha_nac, legajo, fecha_ingreso, fecha_baja=None):
     super().__init__(nombre_apellido, dni, sexo, fecha_nac)
@@ -458,7 +458,7 @@ class Administrativo(Persona):
             comi.profesor = None
       
       
- 
+
       print(f'La materia {materia_elegida.nombre} tiene {len(materia_elegida.profesores)} profesores')
       for comi in materia_elegida.comisiones:
         print(f'{comi.codigo_comision} {comi.profesor}')
@@ -495,8 +495,8 @@ class Administrativo(Persona):
       for comi in materia_elegida.comisiones:
         print(f'{comi.codigo_comision} {comi.profesor}')
       print(f'La materia {materia_elegida.nombre} tiene {len(materia_elegida.profesores)} profesores')
-      
-
+  
+  
   def __str__(self):
       return "{} es administrativo y tiene el legajo {}".format(self.nombre_apellido,self.legajo)
 
@@ -632,6 +632,36 @@ class Administrativo(Persona):
           flag = False
       
     ITBA.profesores.remove(profesor_elegido)
+
+  def bajaAdministrativo(self):
+    almacen_tramites=[]
+    legajo_admin = validadorLegajoAdminyProf(ITBA)
+    if legajo_admin == self.legajo:
+      print("Usted no se puede dar de baja a si mismo")
+    else:
+      for administrativo in ITBA.administrativos:
+        if legajo_admin == administrativo.legajo:
+          if len(administrativo.tramites_abiertos) != 0:
+            if len(ITBA.administrativos)-1 == 0:
+              print(f"Usted no puede dar de baja al Administrativo {administrativo.nombre_apellido} ya que no hay otro Administrativo que pueda hacer sus tramites pendientes")
+            else:
+              for tramite in administrativo.tramites_abiertos:
+                almacen_tramites.append(tramite)
+              ITBA.administrativos.remove(administrativo)
+              ITBA.legajos_administrativos.remove(legajo_admin)
+              cantidad_administrativos = len(ITBA.administrativos)
+              i_random = random.randint(0, cantidad_administrativos - 1)
+              administrativo_asignado=ITBA.administrativos[i_random]
+              for tramite in almacen_tramites:
+                tramite.administrativo=administrativo_asignado
+                administrativo_asignado.tramites_abiertos.append(tramite)
+              print(f"El Administrativo ha sido de baja correctamente, sus tramites fueron asignados al Administrativo {administrativo_asignado.nombre_apellido}")
+          else:
+            ITBA.administrativos.remove(administrativo)
+            ITBA.legajos_administrativos.remove(legajo_admin)
+            print("El Administrativo ha sido dado de baja correctamente")
+
+
       
   
   def crearComision(self):
@@ -676,7 +706,7 @@ class Administrativo(Persona):
 
 
   def estadisticasGenerales(self):
-    armado_menu("ESTADISTICAS GENERALES", ['Alumnos actuales por carrera', "Volver"], [lambda : self.alumnosActualesxCarrera()])
+    armado_menu("ESTADISTICAS GENERALES", ['Alumnos actuales por carrera','Rendimiento Alumno', "Volver"], [lambda : self.alumnosActualesxCarrera(), lambda : self.histogramaNotasFinalesAlumno()])
 
   def alumnosActualesxCarrera(self):
    alumnos=[]
@@ -691,6 +721,60 @@ class Administrativo(Persona):
    plt.title(label = "Alumnos por Carrera")
    plt.show()
 
+  def histogramaNotasFinalesAlumno(self):
+    legajo_alumno=validadorLegajoAlumnos(ITBA)
+    for alumno in ITBA.alumnos:
+      if alumno.legajo==legajo_alumno:
+        alumno_elegido=alumno
+
+    notas=alumno_elegido.historial_academico.values()
+    lista_notas=[]
+    notas_posibles=[1,2,3,4,5,6,7,8,9,10]
+    lista_frecuencias=[]
+    for nota in notas:
+      lista_notas.append(nota)
+    c=0
+    for nota in notas_posibles:
+      for elemento in lista_notas:
+        if nota==elemento:
+          c+=1
+      lista_frecuencias.append(c)
+      c=0
+    
+      
+
   
-  
-  
+
+    plt.title(f"Rendimiento del alumno {alumno_elegido.nombre_apellido}")
+    plt.bar(notas_posibles,lista_frecuencias)
+    plt.xticks(notas_posibles)
+    plt.ylabel("Frecuencia")
+    plt.show()
+
+
+
+# if __name__=="__main__":
+#   m_ainscrib={"Dia":["Martes","Viernes"],"Horario":["12:30-14:00","15:00-18:00"]}
+#   m_inscripto={"Dia":["Martes","Viernes"],"Horario":["13:30-14:00","14:00-19:00"]}
+#   if len(m_ainscrib["Dia"])>1:
+#     i_dia_ainscrib=0
+#     i_dia_inscripto=0
+#     for dia_ainscrib in m_ainscrib["Dia"]:
+#       for dia_inscripto in m_inscripto["Dia"]:
+#         if dia_ainscrib==dia_inscripto:
+#           if m_ainscrib["Horario"][i_dia_ainscrib]
+
+
+#         i_dia_inscripto+=1
+
+
+#       i_dia_ainscrib+=1
+
+if __name__=="__main__":
+  d={"Materia 1":8,"Materia 2":10,"Materia 3":7,"Materia 4":5,"Materia 5":7}
+  notas=d.values()
+  lista=[]
+  print(notas)
+  for nota in notas:
+    lista.append(nota)
+  print(lista)
