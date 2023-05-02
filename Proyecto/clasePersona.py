@@ -59,15 +59,18 @@ class Alumno(Persona):
 
     if len(institucion.historial_tramites) != 0:
       id_tramite= institucion.historial_tramites[-1].id + 1
-    tipo_de_tramite = input("Ingrese el motivo del tramite: ")
-    cantidad_administrativos = len(institucion.administrativos)
-    i_random = random.randint(0,cantidad_administrativos-1)
-    administrativo_asignado=institucion.administrativos[i_random]
-    nuevo_tramite = Tramite(id_tramite,self,administrativo_asignado,tipo_de_tramite,"24/4/2023")
-    administrativo_asignado.tramites_abiertos.append(nuevo_tramite)
-    institucion.tramites_abiertos.append(nuevo_tramite)
-    institucion.historial_tramites.append(nuevo_tramite) 
-    return print("Ya iniciaste el tramite")
+    tipo_de_tramite = input("Ingrese el motivo del tramite o 'exit' si no quiere iniciar tramite: ")
+    if tipo_de_tramite == 'exit':
+      return print("No se inició tramite") 
+    else:
+      cantidad_administrativos = len(institucion.administrativos)
+      i_random = random.randint(0,cantidad_administrativos-1)
+      administrativo_asignado=institucion.administrativos[i_random]
+      nuevo_tramite = Tramite(id_tramite,self,administrativo_asignado,tipo_de_tramite,"24/4/2023")
+      administrativo_asignado.tramites_abiertos.append(nuevo_tramite)
+      institucion.tramites_abiertos.append(nuevo_tramite)
+      institucion.historial_tramites.append(nuevo_tramite) 
+      return print("Ya iniciaste el tramite")
 
   def inscribirMateria(self, materia):
     contador = 0
@@ -143,7 +146,7 @@ class Alumno(Persona):
 class Profesor(Persona):
   def menu_registro_profesor(institucion:Institucion):
     x = "o"
-    legajo_ingresado = validadorLegajoAdminyProf(institucion, 'prof')
+    legajo_ingresado = validadorLegajoAdminyProf(institucion, 'profesor')
     clear()
     for prof in institucion.profesores:
         if prof.legajo == legajo_ingresado:
@@ -253,7 +256,7 @@ class Administrativo(Persona):
         if admin.legajo == legajo_ingresado:
           if admin.sexo == "F":
             x = "a"
-          return armado_menu(f"Bienvenid{x} {admin.nombre_apellido}", ["Dar de alta alumno", "Dar de baja alumno", "Dar de alta profesor", "Dar de baja profesor", "Tramites","Crear Comisión", "Asignar profesor a materia", "Desasignar profesor a materia","Distribución de alumnos por carrera", "Volver"], [lambda : admin.altaAlumno(), lambda : admin.bajaAlumno(), lambda : admin.altaProfesor(), lambda : admin.bajaProfesor(), lambda : admin.displayTramiteActivo(), lambda:admin.crearComision(), lambda : admin.asignarProfesor(), '', lambda : admin.alumnos_actualesxCarrera()])
+          return armado_menu(f"Bienvenid{x} {admin.nombre_apellido}", ["Dar de alta alumno", "Dar de baja alumno", "Dar de alta profesor", "Dar de baja profesor", "Tramites","Crear Comisión", "Asignar profesor a materia", "Desasignar profesor a materia","Distribución de alumnos por carrera", "Volver"], [lambda : admin.altaAlumno(), lambda : admin.bajaAlumno(), lambda : admin.altaProfesor(), lambda : admin.bajaProfesor(), lambda : admin.displayTramiteActivo(), lambda:admin.crearComision(), lambda : admin.asignarProfesor(), lambda : admin.desasignarProfesor(), lambda : admin.alumnos_actualesxCarrera()])
         
   def __init__(self, nombre_apellido, dni, sexo, fecha_nac, legajo, fecha_ingreso, fecha_baja=None):
     super().__init__(nombre_apellido, dni, sexo, fecha_nac)
@@ -268,7 +271,7 @@ class Administrativo(Persona):
   def asignarProfesor(self):
     contador = 0
     flag = False
-    legajo_profesor = validadorLegajoAdminyProf(ITBA,"prof")
+    legajo_profesor = validadorLegajoAdminyProf(ITBA,"profesor")
     materias_disponibles = []
     for profesor in ITBA.profesores:
       if profesor.legajo == legajo_profesor:
@@ -288,7 +291,7 @@ class Administrativo(Persona):
           flag = False
 
     if len(materias_disponibles) == 0:
-      print("Todas las materias tienen un profesor asignado")
+      print("Todas las materias tienen un profesor asignado para cada comision")
     else:
       opcion_elegida1 = validador(contador)
       materia_elegida = materias_disponibles[opcion_elegida1 - 1]
@@ -305,22 +308,93 @@ class Administrativo(Persona):
       comision_elegida = materia_elegida.comisiones[opcion_elegida2 - 1]
 
       comision_elegida.profesor = profesor_elegido
-      materia_elegida.profesores.append(profesor_elegido)
+      if profesor_elegido not in materia_elegida.profesores:
+        materia_elegida.profesores.append(profesor_elegido)
+      
 
       print(f"Se ha asignado correctamente a {profesor_elegido.nombre_apellido} a la comision {comision_elegida.codigo_comision} de {materia_elegida.nombre}")
 
-  
+  def desasignarProfesor(self):
+    materias_de_profesor = []
+    c1 = 0
+    c2 = 0
+    legajo_profesor = validadorLegajoAdminyProf(ITBA,"profesor")
+    for profesor in ITBA.profesores:
+      if profesor.legajo == legajo_profesor:
+        profesor_elegido = profesor
+        clear()
+
+    for carrera in ITBA.carreras:
+        for materia in carrera.materias:
+          for profesor in materia.profesores:
+            if profesor.legajo == legajo_profesor:
+              materias_de_profesor.append(materia)
+
+    print(f'¿Quiere desasignar a {profesor_elegido.nombre_apellido} de una materia o de una comisión en específico?\n\n1. Materia\n2. Comision\n')
+    
+    opcion_elegida1 = validador(2)
+
+    if opcion_elegida1 == 1:
+
+      print(f'Elija materia para desasignar a {profesor_elegido.nombre_apellido}\n\n')
+      for materia in materias_de_profesor:
+        c1 += 1
+        print(f'{c1}. {materia.nombre}')
+
+      opcion_elegida2 = validador(c1)
+      materia_elegida = materias_de_profesor[opcion_elegida2 - 1]
+
+      print(f'¿Seguro que quiere desasignar al profesor {profesor_elegido.nombre_apellido} de la materia {materia_elegida.nombre}?\n\n1. Sí\n2. No (Volver)\n')
+      opcion_elegida3 = validador(2)
+      if opcion_elegida3 == 1:
+        materia_elegida.profesores.remove(profesor_elegido)
+        for comi in materia_elegida.comisiones:
+          if comi.profesor.legajo == legajo_profesor:
+            comi.profesor = None
+      
+      
+ 
+      print(f'La materia {materia_elegida.nombre} tiene {len(materia_elegida.profesores)} profesores')
+      for comi in materia_elegida.comisiones:
+        print(f'{comi.codigo_comision} {comi.profesor}')
+    else:
+
+      print(f'¿De qué materia es la comisión de la cual quiere desasignar al profesor {profesor_elegido.nombre_apellido}?\n\n')
+      for materia in materias_de_profesor:
+        c1 += 1
+        print(f'{c1}. {materia.nombre}')
+
+      opcion_elegida4 = validador(c1)
+      materia_elegida = materias_de_profesor[opcion_elegida4 - 1]
+
+      print(f'Escoja la comisión para desasignar\n\n')
+      for comi in materia_elegida.comisiones:
+        if comi.profesor == profesor_elegido:
+          c2 += 1
+          print(f'{c2}. {comi.codigo_comision}')
+      
+      opcion_elegida5 = validador(c2)
+      comision_elegida = materia_elegida.comisiones[opcion_elegida5 - 1]
+
+      print(f'¿Seguro que quiere desasignar al profesor {profesor_elegido.nombre_apellido} de la comision {comision_elegida.codigo_comision} de la materia {materia_elegida.nombre}?\n\n1. Sí\n2. No (Volver)\n')
+      opcion_elegida6 = validador(2)
+      if opcion_elegida6 == 1:
+        comision_elegida.profesor = None
+        chequeo_profe_en_materia = 0
+        for comi in materia_elegida.comisiones:
+          if comi.profesor == profesor_elegido:
+            chequeo_profe_en_materia += 1
+        if chequeo_profe_en_materia == 0:
+          materia_elegida.profesores.remove(profesor_elegido)
+      
+      for comi in materia_elegida.comisiones:
+        print(f'{comi.codigo_comision} {comi.profesor}')
+      print(f'La materia {materia_elegida.nombre} tiene {len(materia_elegida.profesores)} profesores')
+      
+
   def __str__(self):
       return "{} es administrativo y tiene el legajo {}".format(self.nombre_apellido,self.legajo)
 
-  def  tramitesActivos(self):
-    lista_tramites = ["SALIR - NO HAY TRAMITES POR RESOLVER"]
-    if self.tramites_abiertos != []:
-      lista_tramites = []
-      for tramite in self.tramites_abiertos:
-        lista_tramites.append(tramite.tipo_de_tramite)
-      lista_tramites.append("Volver")
-    return lista_tramites
   
   def tacharTramite(self, id_tram):
       for tramite in self.tramites_abiertos:
@@ -337,26 +411,28 @@ class Administrativo(Persona):
       clear()
     
 
-  def resolverTramite(self, texto_tramite, id_tramite):
-    armado_menu(texto_tramite, ["Resolver tramite", "Volver"], [lambda : self.tacharTramite(id_tramite)])
-
-  
-  
-  def listaFuncTramite(self):
-    lista_funciones = []
-    
-    def funcion_mascara(tramite):
-        return lambda: self.resolverTramite(f'¿Quiere resolver el tramite "{tramite.tipo_de_tramite}" del alumno {tramite.alumno.nombre_apellido}?', tramite.id)
-    
-    for tramite in self.tramites_abiertos:
-        lista_funciones.append(funcion_mascara(tramite))
-    
-    return lista_funciones
+  def resolverTramite(self, tramite): #menu para resolver trámite
+    print(f'¿Quiere resolver el tramite "{tramite.tipo_de_tramite}" del alumno {tramite.alumno.nombre_apellido}?')
+    print("1. Resolver tramite\n2. Volver")
+    rta = validador(2)
+    if rta == 1:
+      self.tacharTramite(tramite.id)
+      
     
   def displayTramiteActivo(self):
-    lista_tramites = self.tramitesActivos()
-    lista_funciones = self.listaFuncTramite()
-    armado_menu('Tramites pendientes', lista_tramites, lista_funciones)
+    resolviendo_tramites = True
+    while resolviendo_tramites:
+      cont_opciones = 1
+      for tramite in self.tramites_abiertos: #por cada tramite activo que tiene el administrativo
+            print(f'{cont_opciones}. {tramite.tipo_de_tramite}') # lo muestra como opcion
+            cont_opciones += 1
+      print(f'{cont_opciones}. Volver')
+      opcion_elegida = validador(cont_opciones)
+      if opcion_elegida == cont_opciones:
+         resolviendo_tramites = False
+      else:
+         self.resolverTramite(self.tramites_abiertos[cont_opciones-1])
+
 
 
   def altaAlumno(self):
@@ -416,7 +492,7 @@ class Administrativo(Persona):
 
   def bajaProfesor(self):
     flag = False
-    legajo_profesor = validadorLegajoAdminyProf(ITBA,"prof")
+    legajo_profesor = validadorLegajoAdminyProf(ITBA,"profesor")
     clear()
     for profesor in ITBA.profesores:
       if profesor.legajo == legajo_profesor:
@@ -456,7 +532,7 @@ class Administrativo(Persona):
 
     print(f"Creación de la comision para {materia_elegida.nombre}\n")
     aula = input("Ingrese el aula de la Comisión: ")
-    profesor_asignado = validadorLegajoAdminyProf(ITBA,"prof")
+    profesor_asignado = validadorLegajoAdminyProf(ITBA,"profesor")
     dia = input("Ingrese el/los dia/s de la semana separados por (,): ").upper().replace(" ","").split(",")
     horario = input("Ingrese el/los horario/s respectivamente a los dias ingresados previamente.(Ejemplo: 10:30 - 12:40): ").replace(" ","").split(",")
     dia_horario = {"Dia":dia,"Horario":horario}
