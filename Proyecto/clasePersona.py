@@ -71,19 +71,33 @@ class Alumno(Persona):
 
   def inscribirMateria(self, materia):
     contador = 0
+    flag = True
+
     print(f"\t\t\nComisiones disponibles para incripcion en {materia.nombre}\n")
     if len(materia.comisiones) != 0:
-      for comisiones in materia.comisiones:
-        contador += 1
-        print(("{}. {}: {}").format(contador, comisiones.codigo_comision, comisiones.dia_y_horario))
-      opcion_elegida = validador(contador)
-      comision = materia.comisiones[opcion_elegida - 1]
-      comision.alumnos.append(self)
-      print(comision.alumnos[0].nombre_apellido)
-      materia.alumnos.append(comision.alumnos[-1])
-      self.materias_en_curso.append(materia)
-      clear()
-      print(f"Te has inscripto correctamente a la comision {comision.codigo_comision} de la materia {materia.nombre}")
+      while flag:
+        for comisiones in materia.comisiones:
+          contador += 1
+          print(f"{contador}. {comisiones.codigo_comision}: {comisiones.dia_y_horario}")
+        
+        print(f"{contador + 1}. Volver")
+
+        opcion_elegida = validador(contador + 1)
+        clear()
+
+      if opcion_elegida == contador + 1:
+        flag = False
+      else:
+        opcion_elegida = validador(contador)
+        comision = materia.comisiones[opcion_elegida - 1]
+        comision.alumnos.append(self)
+
+        materia.alumnos.append(comision.alumnos[-1])
+        self.materias_en_curso.append(materia)
+        clear()
+        flag = False
+        print(f"Te has inscripto correctamente a la comision {comision.codigo_comision} de la materia {materia.nombre}")
+      
     else:
       print("La materia no posee comisiones por el momento")
 
@@ -92,23 +106,24 @@ class Alumno(Persona):
     c1 = 0
     c2 = 0
     flag = True
-    while flag:
-      print(f"\t\t\nMaterias disponibles para incripcion de {self.nombre_apellido}\n")
-      for materia in self.carrera.materias:
-        if len(materia.correlativas) != 0:
-          for corre in materia.correlativas:
-            if corre in self.materias_aprobadas:
-              c1 += 1 #sirve para verificar si es igual a la cantidad de correlativas que tiene la materia, eso querría decir que tiene todas las correlativas aprobadas
-          if c1 == len(materia.correlativas) and materia not in self.materias_aprobadas and materia not in self.materias_en_curso:
-              materias_disponibles.append(materia)
-        elif materia not in self.materias_aprobadas and materia not in self.materias_en_curso:
-          materias_disponibles.append(materia)
+    
+    print(f"\t\t\nMaterias disponibles para incripcion de {self.nombre_apellido}\n")
+    for materia in self.carrera.materias:
+      if len(materia.correlativas) != 0:
+        for corre in materia.correlativas:
+          if corre in self.materias_aprobadas:
+            c1 += 1 #sirve para verificar si es igual a la cantidad de correlativas que tiene la materia, eso implicaría que tiene todas las correlativas aprobadas
+        if c1 == len(materia.correlativas) and materia not in self.materias_aprobadas and materia not in self.materias_en_curso:
+            materias_disponibles.append(materia)
+      elif materia not in self.materias_aprobadas and materia not in self.materias_en_curso:
+        materias_disponibles.append(materia)
 
+    while flag:
       for materia in materias_disponibles:
         c2 += 1
-        print(("{}. {} {}").format(c2, materia.codigo_materia, materia.nombre))
+        print(f"{c2}. {materia.codigo_materia} {materia.nombre}")
 
-      print(("{}. {}").format(c2 + 1, "Volver"))  
+      print(f"{c2 + 1}. Volver")
       opcion_elegida = validador(c2 + 1)
       clear()
       if opcion_elegida == c2 + 1:
@@ -119,22 +134,31 @@ class Alumno(Persona):
 
   def desinscribirMateria(self):
     contador = 0
+    flag: True
     print("Materias en las que está inscripto\n")
     if len(self.materias_en_curso) != 0:
-      for materia in self.materias_en_curso:
-        contador += 1
-        print(("{}. {} {}").format(contador, materia.codigo_materia, materia.nombre))
+      while flag:
+        for materia in self.materias_en_curso:
+          contador += 1
+          print(f"{contador}. {materia.codigo_materia} {materia.nombre}")
+        
+        print(f"{contador + 1}. Volver")
 
-      opcion_elegida = validador(contador)
-      materia_elegida = self.materias_en_curso[opcion_elegida - 1]
-      clear()
-      self.materias_en_curso.remove(materia_elegida)
-      materia_elegida.alumnos.remove(self)
-      for comision in materia_elegida.comisiones:
-          if self in comision.alumnos:
-            comision.alumnos.remove(self)
-      print(f"Ya no se encuentra inscripto en {materia_elegida.nombre}")
+        opcion_elegida = validador(contador + 1)
+        clear()
 
+      if opcion_elegida == contador + 1:
+        flag = False
+      else:
+        materia_elegida = self.materias_en_curso[opcion_elegida - 1]
+        clear()
+        flag = False
+        self.materias_en_curso.remove(materia_elegida)
+        materia_elegida.alumnos.remove(self)
+        for comision in materia_elegida.comisiones:
+            if self in comision.alumnos:
+              comision.alumnos.remove(self)
+        print(f"Ya no se encuentra inscripto en {materia_elegida.nombre}")
     else:
       print("No se encuentra anotado en ninguna materia")
 
@@ -177,52 +201,83 @@ class Profesor(Persona):
   def subirNotaFinal(self, materia):
     comisiones_a_cargo = []
     contador = 0
+    flag = True
     print("Seleccione la comision a la que desea subir la nota final:\n")
     for comision in materia.comisiones:
       if self == comision.profesor:
         comisiones_a_cargo.append(comision)
-    
-    for comision in comisiones_a_cargo:
-      contador += 1
-      print(("{}. Comision {} de {}").format(contador, comision.codigo_comision, materia.nombre))
+    while flag:
+      for comision in comisiones_a_cargo:
+        contador += 1
+        print(f"{contador}. Comision {comision.codigo_comision} de {materia.nombre}")
+      
+      print(f"{contador + 1}. Volver")
 
-    opcion_elegida = validador(contador)
-    comision_elegida = comisiones_a_cargo[opcion_elegida - 1]
-    clear()
+      opcion_elegida = validador(contador + 1)
+      clear()
+
+      if opcion_elegida == contador + 1:
+        flag = False
+      else:
+        comision_elegida = comisiones_a_cargo[opcion_elegida - 1]
+        clear()
+        flag = False
 
     contador = 0
+    flag = True
     print("Seleccione el alumno al que desea subir la nota final:\n")
     if len(comision_elegida.alumnos) != 0:
-      for alumno in comision_elegida.alumnos:
-        contador += 1
-        print(("{}. {}").format(contador, alumno.nombre_apellido))
-      opcion_elegida = validador(contador)
-      clear()
-      alumno_elegido = comision_elegida.alumnos[opcion_elegida - 1]
-      Nota_final = validadorNota()
-      alumno_elegido.historial_academico[materia.nombre] = Nota_final
-      if Nota_final > 4:
-        alumno_elegido.materias_aprobadas.append(materia)
-        print(f"La nota final se cargó correctamente. {alumno_elegido} aprobó {materia.nombre}")
+      while flag:
+        for alumno in comision_elegida.alumnos:
+          contador += 1
+          print(("{}. {}").format(contador, alumno.nombre_apellido))
+        
+        print(f"{contador + 1}. Volver")
+
+        opcion_elegida = validador(contador + 1)
+        clear()
+
+      if opcion_elegida == contador + 1:
+        flag = False
       else:
-        print(f"La nota final se cargó correctamente. {alumno_elegido} no aprobó {materia.nombre}")
+        clear()
+        flag = False
+        alumno_elegido = comision_elegida.alumnos[opcion_elegida - 1]
+        Nota_final = validadorNota()
+        alumno_elegido.historial_academico[materia.nombre] = Nota_final
+        if Nota_final > 4:
+          alumno_elegido.materias_aprobadas.append(materia)
+          print(f"La nota final se cargó correctamente. {alumno_elegido} aprobó {materia.nombre}")
+        else:
+          print(f"La nota final se cargó correctamente. {alumno_elegido} no aprobó {materia.nombre}")
     else:
       print("No hay alumnos en esta comision")
   
   def displayMateriasActivas(self):
     contador = 0
     materias_activas = []
+    flag = True
     print("Materias a las que está inscripto\n")
     for carrera in ITBA.carreras:
       for materia in carrera.materias:
         if self in materia.profesores:
           materias_activas.append(materia)
-    for materia in materias_activas:
-      contador += 1
-      print(("{}. {} {}").format(contador, materia.codigo_materia, materia.nombre))
-    opcion_elegida = validador(contador)
-    clear()
-    self.subirNotaFinal(materias_activas[opcion_elegida - 1])
+    while flag:
+      for materia in materias_activas:
+        contador += 1
+        print(f"{contador}. {materia.codigo_materia} {materia.nombre}")
+
+      print(f"{contador + 1}. Volver")
+
+      opcion_elegida = validador(contador + 1)
+      clear()
+
+      if opcion_elegida == contador + 1:
+        flag = False
+      else:
+        clear()
+        flag = False
+        self.subirNotaFinal(materias_activas[opcion_elegida - 1])
 
 class Administrativo(Persona):
 
@@ -267,7 +322,8 @@ class Administrativo(Persona):
   
   def asignarProfesor(self):
     contador = 0
-    flag = False
+    flag1 = False
+    flag2 = True
     legajo_profesor = validadorLegajoAdminyProf(ITBA,"prof")
     materias_disponibles = []
     for profesor in ITBA.profesores:
@@ -275,39 +331,53 @@ class Administrativo(Persona):
         profesor_elegido = profesor
         clear()
     print("Materias a las que se lo puede asignar\n")
-    for carrera in ITBA.carreras:
-      for materia in carrera.materias:
-        if len(materia.comisiones) > 0:
-          for comision in materia.comisiones:
-            if comision.profesor == None:
-              flag = True
-        if flag:
-          contador += 1
-          materias_disponibles.append(materia)
-          print(("{}. {} {}").format(contador, materia.codigo_materia, materia.nombre))
-          flag = False
+    while flag2:
+      for carrera in ITBA.carreras:
+        for materia in carrera.materias:
+            if len(materia.comisiones) > 0:
+              for comision in materia.comisiones:
+                if comision.profesor == None:
+                  flag1 = True
+            if flag1:
+              contador += 1
+              materias_disponibles.append(materia)
+              print(f"{contador}. {materia.codigo_materia} {materia.nombre}")
+              flag1 = False
 
-    if len(materias_disponibles) == 0:
-      print("Todas las materias tienen un profesor asignado")
-    else:
-      opcion_elegida1 = validador(contador)
-      materia_elegida = materias_disponibles[opcion_elegida1 - 1]
-      clear()
+      if len(materias_disponibles) == 0:
+        print("Todas las materias tienen un profesor asignado")
+      else:
+        print(f"{contador + 1}. Volver")
+        opcion_elegida1 = validador(contador + 1)
+        if opcion_elegida1 == contador + 1:
+          flag2 = False
+        else:
+          materia_elegida = materias_disponibles[opcion_elegida1 - 1]
+          clear()
+          flag2 = False
+
       
-      print(f"Comisiones de {materia_elegida.nombre} a las que se lo puede asignar\n")
-      contador = 0
+    print(f"Comisiones de {materia_elegida.nombre} a las que se lo puede asignar\n")
+    contador = 0
+    flag2 = True
+
+    while flag2:
       for comision in materia_elegida.comisiones:
         if comision.profesor == None:
           contador += 1
-          print(("{}. Comision {} de {}").format(contador, comision.codigo_comision, materia_elegida.nombre))
+          print(f"{contador}. Comision {comision.codigo_comision} de {materia_elegida.nombre}")
 
-      opcion_elegida2 = validador(contador)
-      comision_elegida = materia_elegida.comisiones[opcion_elegida2 - 1]
+      print(f"{contador + 1}. Volver")
 
-      comision_elegida.profesor = profesor_elegido
-      materia_elegida.profesores.append(profesor_elegido)
-
-      print(f"Se ha asignado correctamente a {profesor_elegido.nombre_apellido} a la comision {comision_elegida.codigo_comision} de {materia_elegida.nombre}")
+      opcion_elegida2 = validador(contador + 1)
+      if opcion_elegida2 == contador + 1:
+          flag2 = False
+      else:
+        comision_elegida = materia_elegida.comisiones[opcion_elegida2 - 1]
+        comision_elegida.profesor = profesor_elegido
+        materia_elegida.profesores.append(profesor_elegido)
+        flag2 = False
+        print(f"Se ha asignado correctamente a {profesor_elegido.nombre_apellido} a la comision {comision_elegida.codigo_comision} de {materia_elegida.nombre}")
 
   
   def __str__(self):
@@ -363,28 +433,34 @@ class Administrativo(Persona):
     nombre = input("Ingrese el nombre del alumno: ")
     dni = input("Ingrese el DNI del alumno: ")
     sexo = input("Ingrese el sexo del alumno: ")
-    fecha_nacimiento= input("Ingrese la fecha de nacimiento del alumno: ")
-    if len(ITBA.legajos_alumnos)!= 0:
-      legajo = ITBA.legajos_alumnos[-1]+1
+    fecha_nacimiento = input("Ingrese la fecha de nacimiento del alumno: ")
+    if len(ITBA.legajos_alumnos) != 0:
+      legajo = ITBA.legajos_alumnos[-1] + 1
     else:
       legajo = 10000
     fecha_ingreso = input("Ingrese la fecha de ingreso del alumno: ")
     contador = 0
-    
-
-    alumno_nuevo = Alumno(nombre,dni,sexo,fecha_nacimiento,legajo,fecha_ingreso)
+    flag = True
+    alumno_nuevo = Alumno(nombre, dni, sexo, fecha_nacimiento, legajo, fecha_ingreso)
     clear()
     #Para que el administrativo anote al alumno en un objeto carrera
-    print(f'\n\t\t Ingrese la carrera del alumno\n')
-    for carrera in ITBA.carreras:
-      contador += 1
-      print(("{}. {}").format(contador,carrera.nombre))
-    opcion_elegida = validador(contador)
-    alumno_nuevo.carrera = ITBA.carreras[opcion_elegida-1]
-    clear()
-    print("Se ha anotado al alumno a la carrera: ",alumno_nuevo.carrera.nombre)
-    ITBA.agregar_alumno(alumno_nuevo)
-    alumno_nuevo.carrera.alumnos_actuales.append(alumno_nuevo)
+    print(f'\n\t\t Seleccione la carrera del alumno\n')
+    while flag:
+      for carrera in ITBA.carreras:
+        contador += 1
+        print(f"{contador}. {carrera.nombre}")
+
+      print(f"{contador + 1}. Volver")
+
+      opcion_elegida = validador(contador + 1)
+      if opcion_elegida == contador + 1:
+          flag = False
+      else:
+        alumno_nuevo.carrera = ITBA.carreras[opcion_elegida-1]
+        clear()
+        print("Se ha anotado al alumno a la carrera: ", alumno_nuevo.carrera.nombre)
+        ITBA.agregar_alumno(alumno_nuevo)
+        alumno_nuevo.carrera.alumnos_actuales.append(alumno_nuevo)
 
   def altaProfesor(self):
     nombre = input("Ingrese el nombre del profesor: ")
@@ -392,7 +468,7 @@ class Administrativo(Persona):
     sexo = input("Ingrese el sexo del profesor: ")
     fecha_nacimiento= input("Ingrese la fecha de nacimiento del profesor: ")
     if len(ITBA.legajos_profesores) != 0:
-      legajo_numero = int(ITBA.legajos_profesores[-1][2:])+1
+      legajo_numero = int(ITBA.legajos_profesores[-1][2:]) + 1
       legajo_alfa = "PR"
       legajo = legajo_alfa + str(legajo_numero)
     else:
@@ -440,44 +516,52 @@ class Administrativo(Persona):
   def crearComision(self):
     contador = 0
     materias_total = []
+    flag = True
     print("Materias de la institución\n")
-    for carrera in ITBA.carreras:
-      for materia in carrera.materias:
-        contador += 1
-        materias_total.append(materia)
-        print(("{}. {} {}").format(contador, materia.codigo_materia, materia.nombre))
-    
-    opcion_elegida = validador(contador)
-    materia_elegida = materias_total[opcion_elegida - 1]
-    clear()
-    cod_comi = "A"
-    if len(materia_elegida.comisiones) != 0:
-      cod_comi = ascii_uppercase[len(materia_elegida.comisiones)]
+    while flag:
+      for carrera in ITBA.carreras:
+        for materia in carrera.materias:
+          contador += 1
+          materias_total.append(materia)
+          print(f"{contador}. {materia.codigo_materia} {materia.nombre}")
+      
+      print(f"{contador + 1}. Volver")
 
-    print(f"Creación de la comision para {materia_elegida.nombre}\n")
-    aula = input("Ingrese el aula de la Comisión: ")
-    profesor_asignado = validadorLegajoAdminyProf(ITBA,"prof")
-    dia = input("Ingrese el/los dia/s de la semana separados por (,): ").upper().replace(" ","").split(",")
-    horario = input("Ingrese el/los horario/s respectivamente a los dias ingresados previamente.(Ejemplo: 10:30 - 12:40): ").replace(" ","").split(",")
-    dia_horario = {"Dia":dia,"Horario":horario}
-    clear()
-    
-    nueva_comision = Comision(cod_comi, aula, profesor_asignado, dia_horario)
+      opcion_elegida = validador(contador + 1)
+      if opcion_elegida == contador + 1:
+          flag = False
+      else:
+        materia_elegida = materias_total[opcion_elegida - 1]
+        clear()
+        flag = False
+        cod_comi = "A"
+        if len(materia_elegida.comisiones) != 0:
+          cod_comi = ascii_uppercase[len(materia_elegida.comisiones)]
 
-    materia_elegida.comisiones.append(nueva_comision)
-    materia_elegida.profesores.append(profesor_asignado)
+        print(f"Creación de la comision para {materia_elegida.nombre}\n")
+        aula = input("Ingrese el aula de la Comisión: ")
+        profesor_asignado = validadorLegajoAdminyProf(ITBA,"prof")
+        dia = input("Ingrese el/los dia/s de la semana separados por (,): ").upper().replace(" ","").split(",")
+        horario = input("Ingrese el/los horario/s respectivamente a los dias ingresados previamente.(Ejemplo: 10:30 - 12:40): ").replace(" ","").split(",")
+        dia_horario = {"Dia":dia,"Horario":horario}
+        clear()
+        
+        nueva_comision = Comision(cod_comi, aula, profesor_asignado, dia_horario)
 
-    print(f"La comision {nueva_comision.codigo_comision} de {materia_elegida.nombre} fue creada correctamente ")
+        materia_elegida.comisiones.append(nueva_comision)
+        materia_elegida.profesores.append(profesor_asignado)
+
+        print(f"La comision {nueva_comision.codigo_comision} de {materia_elegida.nombre} fue creada correctamente ")
 
 
   def alumnos_actualesxCarrera(self):
    alumnos=[]
    carreras=[]
    for carrera in ITBA.carreras:
-     c=0
+     c = 0
      carreras.append(carrera.nombre)
      for alumno in carrera.alumnos_actuales:
-       c+=1
+       c += 1
      alumnos.append(c)
    plt.pie(alumnos,labels=carreras,autopct='%1.1f%%')
    plt.title(label="Alumnos por Carrera")
