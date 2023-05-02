@@ -42,14 +42,15 @@ Algebra = Materia("67.30", "Algebra", 6, "SDF", "Matematica")
 Microeconomia = Materia("43.74", "Microeconomia", 6, "SDF", "Economia", [Analisis_matematico, Algebra])
 
 comi1 = Comision("A", "201F", Girafa, {"dia":["Lunes"], "horario":["12:30-14:30"]})
-comi2 = Comision("B", "202F", Girafa, {"dia":["Martes"], "horario":["12:30-14:30"]})
+comi2 = Comision("A", "202F", Girafa, {"dia":["Martes"], "horario":["12:30-14:30"]})
 
 Analisis_matematico.comisiones.append(comi1)
-Analisis_matematico.comisiones.append(comi2)
+Algebra.comisiones.append(comi2)
 
 comi1.profesor = Girafa
 comi2.profesor = Girafa
 Analisis_matematico.profesores.append(Girafa)
+Algebra.profesores.append(Girafa)
 
 ITBA.agregar_alumno(Leo)
 ITBA.agregar_alumno(Juana)

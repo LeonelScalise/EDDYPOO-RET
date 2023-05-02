@@ -94,18 +94,17 @@ class Alumno(Persona):
         opcion_elegida = validador(contador + 1)
         clear()
 
-      if opcion_elegida == contador + 1:
-        flag = False
-      else:
-        opcion_elegida = validador(contador)
-        comision = materia.comisiones[opcion_elegida - 1]
-        comision.alumnos.append(self)
+        if opcion_elegida == contador + 1:
+          flag = False
+        else:
+          comision = materia.comisiones[opcion_elegida - 1]
+          comision.alumnos.append(self)
 
-        materia.alumnos.append(comision.alumnos[-1])
-        self.materias_en_curso.append(materia)
-        clear()
-        flag = False
-        print(f"Te has inscripto correctamente a la comision {comision.codigo_comision} de la materia {materia.nombre}")
+          materia.alumnos.append(comision.alumnos[-1])
+          self.materias_en_curso.append(materia)
+          clear()
+          flag = False
+          print(f"Te has inscripto correctamente a la comision {comision.codigo_comision} de la materia {materia.nombre}")
       
     else:
       print("La materia no posee comisiones por el momento")
@@ -143,7 +142,7 @@ class Alumno(Persona):
 
   def desinscribirMateria(self):
     contador = 0
-    flag: True
+    flag = True
     print("Materias en las que está inscripto\n")
     if len(self.materias_en_curso) != 0:
       while flag:
@@ -156,18 +155,19 @@ class Alumno(Persona):
         opcion_elegida = validador(contador + 1)
         clear()
 
-      if opcion_elegida == contador + 1:
-        flag = False
-      else:
-        materia_elegida = self.materias_en_curso[opcion_elegida - 1]
-        clear()
-        flag = False
-        self.materias_en_curso.remove(materia_elegida)
-        materia_elegida.alumnos.remove(self)
-        for comision in materia_elegida.comisiones:
-            if self in comision.alumnos:
-              comision.alumnos.remove(self)
-        print(f"Ya no se encuentra inscripto en {materia_elegida.nombre}")
+        if opcion_elegida == contador + 1:
+          flag = False
+        else:
+          materia_elegida = self.materias_en_curso[opcion_elegida - 1]
+          clear()
+          flag = False
+          self.materias_en_curso.remove(materia_elegida)
+          materia_elegida.alumnos.remove(self)
+          for comision in materia_elegida.comisiones:
+              if self in comision.alumnos:
+                comision.alumnos.remove(self)
+          print(f"Ya no se encuentra inscripto en {materia_elegida.nombre}")
+
     else:
       print("No se encuentra anotado en ninguna materia")
 
@@ -183,9 +183,14 @@ class Alumno(Persona):
       suma += nota
       cantidad_notas += 1
     
-    promedio = suma / cantidad_notas
+    if cantidad_notas != 0:
+      promedio = suma / cantidad_notas
+      return print(f"Promedio lineal de la carrera: {promedio}")
+    
+    else:
+      print(f"{self.nombre_apellido} no tiene notas cargadas por el momento")
 
-    return print(f"Promedio lineal de la carrera: {promedio}")
+    
     
 
 class Profesor(Persona):
@@ -242,46 +247,51 @@ class Profesor(Persona):
       
       print(f"{contador + 1}. Volver")
 
-      opcion_elegida = validador(contador + 1)
+      opcion_elegida1 = validador(contador + 1)
       clear()
 
-      if opcion_elegida == contador + 1:
+      if opcion_elegida1 == contador + 1:
         flag = False
+        comision_elegida = None
       else:
-        comision_elegida = comisiones_a_cargo[opcion_elegida - 1]
+        comision_elegida = comisiones_a_cargo[opcion_elegida1 - 1]
         clear()
         flag = False
 
-    contador = 0
-    flag = True
-    print("Seleccione el alumno al que desea subir la nota final:\n")
-    if len(comision_elegida.alumnos) != 0:
-      while flag:
-        for alumno in comision_elegida.alumnos:
-          contador += 1
-          print(("{}. {}").format(contador, alumno.nombre_apellido))
-        
-        print(f"{contador + 1}. Volver")
+    if comision_elegida is not None:
+      contador = 0
+      flag = True
+      print("Seleccione el alumno al que desea subir la nota final:\n")
+      if len(comision_elegida.alumnos) != 0:
+        while flag:
+          for alumno in comision_elegida.alumnos:
+            contador += 1
+            print(f"{contador}. {alumno.nombre_apellido}")
+          
+          print(f"{contador + 1}. Volver")
 
-        opcion_elegida = validador(contador + 1)
-        clear()
+          opcion_elegida2 = validador(contador + 1)
+          clear()
 
-      if opcion_elegida == contador + 1:
-        flag = False
+          if opcion_elegida2 == contador + 1:
+            flag = False
+          else:
+            clear()
+            alumno_elegido = comision_elegida.alumnos[opcion_elegida2 - 1]
+            Nota_final = validadorNota()
+            alumno_elegido.historial_academico[materia.nombre] = Nota_final
+            flag = False
+            if Nota_final >= 4:
+              alumno_elegido.materias_aprobadas.append(materia)
+              alumno_elegido.materias_en_curso.remove(materia)
+              materia.alumnos.remove(alumno_elegido)
+              comision_elegida.alumnos.remove(alumno_elegido)
+              alumno_elegido.creditos_aprobados += materia.creditos
+              print(f"La nota final se cargó correctamente. {alumno_elegido} aprobó {materia.nombre}")
+            else:
+              print(f"La nota final se cargó correctamente. {alumno_elegido} no aprobó {materia.nombre}")
       else:
-        clear()
-        flag = False
-        alumno_elegido = comision_elegida.alumnos[opcion_elegida - 1]
-        Nota_final = validadorNota()
-        alumno_elegido.historial_academico[materia.nombre] = Nota_final
-        if Nota_final >= 4:
-          alumno_elegido.materias_aprobadas.append(materia)
-          alumno_elegido.creditos_aprobados += materia.creditos
-          print(f"La nota final se cargó correctamente. {alumno_elegido} aprobó {materia.nombre}")
-        else:
-          print(f"La nota final se cargó correctamente. {alumno_elegido} no aprobó {materia.nombre}")
-    else:
-      print("No hay alumnos en esta comision")
+        print("No hay alumnos en esta comision")
   
   def displayMateriasActivas(self):
     contador = 0
@@ -327,8 +337,8 @@ class Administrativo(Persona):
 
         institucion.administrativos.append(Administrativo(nombre_apellido, dni, sexo, fecha_nac, legajo, fecha_ingreso))
         institucion.legajos_administrativos.append(legajo)
+        clear()
         print(f'El administrativo {nombre_apellido} se ha creado correctamente')
-        print(len(institucion.administrativos))
 
   def menu_registro_administrativo(institucion:Institucion):
     x = "o"
@@ -558,7 +568,7 @@ class Administrativo(Persona):
         contador += 1
         print(f"{contador}. {carrera.nombre}")
 
-      print(f"{contador + 1}. Volver")
+      print(f"{contador + 1}. Cancelar")
 
       opcion_elegida = validador(contador + 1)
       if opcion_elegida == contador + 1:
@@ -566,6 +576,7 @@ class Administrativo(Persona):
       else:
         alumno_nuevo.carrera = ITBA.carreras[opcion_elegida-1]
         clear()
+        flag = False
         print("Se ha anotado al alumno a la carrera: ", alumno_nuevo.carrera.nombre)
         ITBA.agregar_alumno(alumno_nuevo)
         alumno_nuevo.carrera.alumnos_actuales.append(alumno_nuevo)
