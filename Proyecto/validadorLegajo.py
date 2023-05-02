@@ -40,16 +40,16 @@ def validadorLegajoAlumnos(institucion):
             inicio = reintento() 
     return legajoingresado
 
-def validadorLegajoAdminyProf(institucion, rol = 'admin'):
+def validadorLegajoAdminyProf(institucion, rol = 'administrativo'):
     inicio = True
     while inicio: #arranca el loop
         try: #intenta pedir una respuesta
-            legajoingresado = input("Ingrese el numero de legajo: ").upper()
+            legajoingresado = input(f'Ingrese el numero de legajo de {rol}: ').upper()
             print(legajoingresado[:2])
             
             if len(legajoingresado) != 7:
                 raise Exception("\nEl legajo debe ser una cadena de 7 digitos.\n")
-            if rol == 'prof':
+            if rol == 'profesor':
                 if legajoingresado[:2] != "PR":
                     raise Exception("\nEl legajo debe comenzar con las primeras dos letras de su rol.\n")
                 if legajoingresado not in institucion.legajos_profesores:
