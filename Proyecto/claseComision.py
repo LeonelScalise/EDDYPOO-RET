@@ -3,6 +3,5 @@ class Comision:
         self.codigo_comision = codigo_comision
         self.aula = aula
         self.profesor = profesor
-        self.ayudantes = []
         self.dia_y_horario = dia_y_horario
         self.alumnos = []

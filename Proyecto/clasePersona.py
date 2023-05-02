@@ -441,62 +441,70 @@ class Administrativo(Persona):
 
     if opcion_elegida1 == 1:
 
-      print(f'Elija materia para desasignar a {profesor_elegido.nombre_apellido}\n\n')
-      for materia in materias_de_profesor:
-        c1 += 1
-        print(f'{c1}. {materia.nombre}')
+      if len(materias_de_profesor) == 0:
+        print("El profesor no tiene materias asignadas.")
+      else:
 
-      opcion_elegida2 = validador(c1)
-      materia_elegida = materias_de_profesor[opcion_elegida2 - 1]
+        print(f'Elija materia para desasignar a {profesor_elegido.nombre_apellido}\n\n')
+        for materia in materias_de_profesor:
+          c1 += 1
+          print(f'{c1}. {materia.nombre}')
 
-      print(f'¿Seguro que quiere desasignar al profesor {profesor_elegido.nombre_apellido} de la materia {materia_elegida.nombre}?\n\n1. Sí\n2. No (Volver)\n')
-      opcion_elegida3 = validador(2)
-      if opcion_elegida3 == 1:
-        materia_elegida.profesores.remove(profesor_elegido)
+        opcion_elegida2 = validador(c1)
+        materia_elegida = materias_de_profesor[opcion_elegida2 - 1]
+
+        print(f'¿Seguro que quiere desasignar al profesor {profesor_elegido.nombre_apellido} de la materia {materia_elegida.nombre}?\n\n1. Sí\n2. No (Volver)\n')
+        opcion_elegida3 = validador(2)
+        if opcion_elegida3 == 1:
+          materia_elegida.profesores.remove(profesor_elegido)
+          for comi in materia_elegida.comisiones:
+            if comi.profesor.legajo == legajo_profesor:
+              comi.profesor = None
+        
+        
+  
+        print(f'La materia {materia_elegida.nombre} tiene {len(materia_elegida.profesores)} profesores')
         for comi in materia_elegida.comisiones:
-          if comi.profesor.legajo == legajo_profesor:
-            comi.profesor = None
-      
-      
+          print(f'{comi.codigo_comision} {comi.profesor}')
 
-      print(f'La materia {materia_elegida.nombre} tiene {len(materia_elegida.profesores)} profesores')
-      for comi in materia_elegida.comisiones:
-        print(f'{comi.codigo_comision} {comi.profesor}')
-    else:
 
-      print(f'¿De qué materia es la comisión de la cual quiere desasignar al profesor {profesor_elegido.nombre_apellido}?\n\n')
-      for materia in materias_de_profesor:
-        c1 += 1
-        print(f'{c1}. {materia.nombre}')
+    elif opcion_elegida1 == 2:
+      if len(materias_de_profesor) != 0:
 
-      opcion_elegida4 = validador(c1)
-      materia_elegida = materias_de_profesor[opcion_elegida4 - 1]
+        print(f'¿De qué materia es la comisión de la cual quiere desasignar al profesor {profesor_elegido.nombre_apellido}?\n\n')
+        for materia in materias_de_profesor:
+          c1 += 1
+          print(f'{c1}. {materia.nombre}')
 
-      print(f'Escoja la comisión para desasignar\n\n')
-      for comi in materia_elegida.comisiones:
-        if comi.profesor == profesor_elegido:
-          c2 += 1
-          print(f'{c2}. {comi.codigo_comision}')
-      
-      opcion_elegida5 = validador(c2)
-      comision_elegida = materia_elegida.comisiones[opcion_elegida5 - 1]
-
-      print(f'¿Seguro que quiere desasignar al profesor {profesor_elegido.nombre_apellido} de la comision {comision_elegida.codigo_comision} de la materia {materia_elegida.nombre}?\n\n1. Sí\n2. No (Volver)\n')
-      opcion_elegida6 = validador(2)
-      if opcion_elegida6 == 1:
-        comision_elegida.profesor = None
-        chequeo_profe_en_materia = 0
+        opcion_elegida4 = validador(c1)
+        materia_elegida = materias_de_profesor[opcion_elegida4 - 1]
+        print(f'Escoja la comisión para desasignar\n\n')
         for comi in materia_elegida.comisiones:
           if comi.profesor == profesor_elegido:
-            chequeo_profe_en_materia += 1
-        if chequeo_profe_en_materia == 0:
-          materia_elegida.profesores.remove(profesor_elegido)
+            c2 += 1
+            print(f'{c2}. {comi.codigo_comision}')
+          
+        opcion_elegida5 = validador(c2)
+        comision_elegida = materia_elegida.comisiones[opcion_elegida5 - 1]
+
+        print(f'¿Seguro que quiere desasignar al profesor {profesor_elegido.nombre_apellido} de la comision {comision_elegida.codigo_comision} de la materia {materia_elegida.nombre}?\n\n1. Sí\n2. No (Volver)\n')
+        opcion_elegida6 = validador(2)
+        if opcion_elegida6 == 1:
+          comision_elegida.profesor = None
+          chequeo_profe_en_materia = 0
+          for comi in materia_elegida.comisiones:
+            if comi.profesor == profesor_elegido:
+              chequeo_profe_en_materia += 1
+          if chequeo_profe_en_materia == 0:
+            materia_elegida.profesores.remove(profesor_elegido)
+        
+        for comi in materia_elegida.comisiones:
+          print(f'{comi.codigo_comision} {comi.profesor}')
+        print(f'La materia {materia_elegida.nombre} tiene {len(materia_elegida.profesores)} profesores')
       
-      for comi in materia_elegida.comisiones:
-        print(f'{comi.codigo_comision} {comi.profesor}')
-      print(f'La materia {materia_elegida.nombre} tiene {len(materia_elegida.profesores)} profesores')
-  
-  
+      else:
+        print("El profesor no tiene comisiones a cargo.")
+
   def __str__(self):
       return "{} es administrativo y tiene el legajo {}".format(self.nombre_apellido,self.legajo)
 
@@ -691,7 +699,12 @@ class Administrativo(Persona):
 
         print(f"Creación de la comision para {materia_elegida.nombre}\n")
         aula = validadorAula()
-        profesor_asignado = validadorLegajoAdminyProf(ITBA,"profesor")
+        legajo_profesor_asignado = validadorLegajoAdminyProf(ITBA,"profesor")
+
+        for profesor in ITBA.profesores:
+          if profesor.legajo == legajo_profesor_asignado:
+            profesor_asignado = profesor
+
         dia = validadorDia().upper().replace(" ","").split(",")
         horario = validadorHorario(dia).replace(" ","").split(",")
         dia_horario = {"Dia":dia,"Horario":horario}
