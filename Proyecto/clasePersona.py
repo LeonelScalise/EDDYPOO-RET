@@ -54,7 +54,7 @@ class Alumno(Persona):
     return self.nombre_apellido
   
 
-  def iniciarTramite(self,institucion):
+  def iniciarTramite(self, institucion):
     id_tramite = 0
 
     if len(institucion.historial_tramites) != 0:
@@ -64,9 +64,9 @@ class Alumno(Persona):
       return print("No se inició tramite") 
     else:
       cantidad_administrativos = len(institucion.administrativos)
-      i_random = random.randint(0,cantidad_administrativos-1)
+      i_random = random.randint(0, cantidad_administrativos - 1)
       administrativo_asignado=institucion.administrativos[i_random]
-      nuevo_tramite = Tramite(id_tramite,self,administrativo_asignado,tipo_de_tramite,"24/4/2023")
+      nuevo_tramite = Tramite(id_tramite, self, administrativo_asignado,tipo_de_tramite,"24/4/2023")
       administrativo_asignado.tramites_abiertos.append(nuevo_tramite)
       institucion.tramites_abiertos.append(nuevo_tramite)
       institucion.historial_tramites.append(nuevo_tramite) 
@@ -165,7 +165,8 @@ class Alumno(Persona):
     else:
       print("No se encuentra anotado en ninguna materia")
 
-        
+  def verPromedioCarrera(self):
+    
 
 class Profesor(Persona):
   def menu_registro_profesor(institucion:Institucion):
@@ -186,20 +187,23 @@ class Profesor(Persona):
     self.fecha_baja = fecha_baja
     self.comisiones_a_cargo = []
 
-  def iniciarTramite(self,institucion):
+  def iniciarTramite(self, institucion):
     id_tramite = 0
 
     if len(institucion.historial_tramites) != 0:
-      id_tramite = institucion.historial_tramites[-1].id + 1
-    tipo_de_tramite = input("Ingrese el motivo del tramite: ")
-    cantidad_administrativos = len(institucion.administrativos)
-    i_random = random.randint(0,cantidad_administrativos-1)
-    administrativo_asignado = institucion.administrativos[i_random]
-    nuevo_tramite = Tramite(id_tramite,self,administrativo_asignado,tipo_de_tramite,"24/4/2023")
-    administrativo_asignado.tramites_abiertos.append(nuevo_tramite)
-    institucion.tramites_abiertos.append(nuevo_tramite)
-    institucion.historial_tramites.append(nuevo_tramite) 
-    return print("Ya iniciaste el tramite")
+      id_tramite= institucion.historial_tramites[-1].id + 1
+    tipo_de_tramite = input("Ingrese el motivo del tramite o 'exit' si no quiere iniciar tramite: ")
+    if tipo_de_tramite == 'exit':
+      return print("No se inició tramite") 
+    else:
+      cantidad_administrativos = len(institucion.administrativos)
+      i_random = random.randint(0, cantidad_administrativos - 1)
+      administrativo_asignado=institucion.administrativos[i_random]
+      nuevo_tramite = Tramite(id_tramite, self, administrativo_asignado,tipo_de_tramite,"24/4/2023")
+      administrativo_asignado.tramites_abiertos.append(nuevo_tramite)
+      institucion.tramites_abiertos.append(nuevo_tramite)
+      institucion.historial_tramites.append(nuevo_tramite) 
+      return print("Ya iniciaste el tramite")
   
   def subirNotaFinal(self, materia):
     comisiones_a_cargo = []
