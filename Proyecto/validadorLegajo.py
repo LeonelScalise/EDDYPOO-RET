@@ -45,7 +45,6 @@ def validadorLegajoAdminyProf(institucion, rol = 'administrativo'):
     while inicio: #arranca el loop
         try: #intenta pedir una respuesta
             legajoingresado = input(f'Ingrese el numero de legajo de {rol}: ').upper()
-            print(legajoingresado[:2])
             
             if len(legajoingresado) != 7:
                 raise Exception("\nEl legajo debe ser una cadena de 7 digitos.\n")

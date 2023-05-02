@@ -1,7 +1,5 @@
-from validadorInputs import *
 from armado_menu import *
 from claseInstitucion import *
-from validadorLegajo import *
 import os
 from claseTramite import *
 import random
@@ -9,6 +7,14 @@ from popularInstitucion import ITBA
 from claseCarrera import *
 from validadorNota import *
 import matplotlib.pyplot as plt
+from validadorInputs import *
+from validadorLegajo import *
+from validadorDNI import *
+from validadorSexo import *
+from validadorFecha import * 
+from validadorAula import *
+from validadorDia import *
+from validadorHorario import *
 
 
 
@@ -16,9 +22,6 @@ clear = lambda : os.system('cls')
 
 class Persona:
   def __init__(self, nombre_apellido, dni, sexo, fecha_nac):
-    while not str(dni).isdigit():
-        print("El dni debe ser un entero")
-        dni = input("Ingresar dni: ")
     self.dni=dni
     self.nombre_apellido = nombre_apellido
     self.sexo = sexo
@@ -37,16 +40,18 @@ class Alumno(Persona):
           return armado_menu(f"Bienvenid{x} {alumno.nombre_apellido}", ["Inscripcion a materia", "Desinscripción a materia", "Iniciar Tramite", "Volver"], [lambda : alumno.displayMateriasDisponibles(), lambda : alumno.desinscribirMateria() , lambda : alumno.iniciarTramite(ITBA)])
 
 
-  def __init__(self, nombre_apellido, dni, sexo, fecha_nac, legajo,fecha_ingreso,estado_alumno="Activo", carrera=None, creditos_aprobados=0):
+  def __init__(self, nombre_apellido, dni, sexo, fecha_nac, legajo,fecha_ingreso,estado_alumno="Activo", carrera=None, fecha_baja = None):
     super().__init__(nombre_apellido, dni, sexo, fecha_nac)
     self.legajo = legajo
     self.materias_aprobadas = []
     self.materias_en_curso = []
     self.fecha_ingreso = fecha_ingreso
     self.carrera = carrera
+    self.fecha_baja = fecha_baja
+    self.creditos_aprobados = 0
     self.historial_academico = {}
     self.estado_alumno = estado_alumno
-    self.tramites_pendientes = []
+    self.tramites_abiertos = []
     self.tramites_resueltos = []
 
  
@@ -69,7 +74,8 @@ class Alumno(Persona):
       nuevo_tramite = Tramite(id_tramite, self, administrativo_asignado,tipo_de_tramite,"24/4/2023")
       administrativo_asignado.tramites_abiertos.append(nuevo_tramite)
       institucion.tramites_abiertos.append(nuevo_tramite)
-      institucion.historial_tramites.append(nuevo_tramite) 
+      institucion.historial_tramites.append(nuevo_tramite)
+      self.tramites_abiertos.append(nuevo_tramite)
       return print("Ya iniciaste el tramite")
 
   def inscribirMateria(self, materia):
@@ -165,7 +171,6 @@ class Alumno(Persona):
     else:
       print("No se encuentra anotado en ninguna materia")
 
-  def verPromedioCarrera(self):
     
 
 class Profesor(Persona):
@@ -180,13 +185,14 @@ class Profesor(Persona):
           return armado_menu(f"Bienvenid{x} {prof.nombre_apellido}", ["Subir nota final", "Iniciar Tramite", "Volver"], [lambda : prof.displayMateriasActivas(), lambda: prof.iniciarTramite(ITBA)])
 
 
-  def __init__(self, nombre_apellido, dni, sexo, fecha_nac, legajo, fecha_ingreso, fecha_baja=None, comisiones_a_cargo=None):
+  def __init__(self, nombre_apellido, dni, sexo, fecha_nac, legajo, fecha_ingreso, fecha_baja=None):
     super().__init__(nombre_apellido, dni, sexo, fecha_nac)
     self.legajo = legajo
     self.fecha_ingreso = fecha_ingreso
     self.fecha_baja = fecha_baja
     self.comisiones_a_cargo = []
-
+    self.tramites_abiertos = []
+    self.tramites_resueltos = []
   def iniciarTramite(self, institucion):
     id_tramite = 0
 
@@ -199,10 +205,11 @@ class Profesor(Persona):
       cantidad_administrativos = len(institucion.administrativos)
       i_random = random.randint(0, cantidad_administrativos - 1)
       administrativo_asignado=institucion.administrativos[i_random]
-      nuevo_tramite = Tramite(id_tramite, self, administrativo_asignado,tipo_de_tramite,"24/4/2023")
+      nuevo_tramite = Tramite(id_tramite, None, administrativo_asignado,tipo_de_tramite,"24/4/2023", self)
       administrativo_asignado.tramites_abiertos.append(nuevo_tramite)
       institucion.tramites_abiertos.append(nuevo_tramite)
       institucion.historial_tramites.append(nuevo_tramite) 
+      self.tramites_abiertos.append(nuevo_tramite)
       return print("Ya iniciaste el tramite")
   
   def subirNotaFinal(self, materia):
@@ -252,8 +259,9 @@ class Profesor(Persona):
         alumno_elegido = comision_elegida.alumnos[opcion_elegida - 1]
         Nota_final = validadorNota()
         alumno_elegido.historial_academico[materia.nombre] = Nota_final
-        if Nota_final > 4:
+        if Nota_final >= 4:
           alumno_elegido.materias_aprobadas.append(materia)
+          alumno_elegido.creditos_aprobados += materia.creditos
           print(f"La nota final se cargó correctamente. {alumno_elegido} aprobó {materia.nombre}")
         else:
           print(f"La nota final se cargó correctamente. {alumno_elegido} no aprobó {materia.nombre}")
@@ -291,16 +299,16 @@ class Administrativo(Persona):
   def altaAdministrativo(institucion:Institucion):
         
         nombre_apellido = input("Ingrese el nombre y apellido del administrativo: ")
-        dni = input("Ingrese el DNI del empleado: ")
-        fecha_nac = input("Ingrese la fecha de nacimiento: ")
-        sexo = input("Ingrese el sexo: ")
+        dni = validadorDNI()
+        fecha_nac = validadorFecha()
+        sexo = validadorSexo()
         if len(ITBA.legajos_administrativos) != 0:
           legajo_numero = int(ITBA.legajos_administrativos[-1][2:])+1
           legajo_alfa = "AD"
           legajo = legajo_alfa + str(legajo_numero)
         else:
           legajo="AD10000"
-        fecha_ingreso = input(f'Ingrese la fecha de ingreso a {institucion.nombre}: ')
+        fecha_ingreso = datetime.strptime(datetime.today().strftime('%d/%m/%Y'), '%d/%m/%Y')
 
         institucion.administrativos.append(Administrativo(nombre_apellido, dni, sexo, fecha_nac, legajo, fecha_ingreso))
         institucion.legajos_administrativos.append(legajo)
@@ -321,17 +329,16 @@ class Administrativo(Persona):
     super().__init__(nombre_apellido, dni, sexo, fecha_nac)
     self.legajo = legajo
     self.fecha_ingreso = fecha_ingreso
-    self.fecha_baja = fecha_baja
+    self.fecha_baja = fecha_baja #Dejamos esto por si queres hacerlo fede, si te da fiaca, borralo tranqui o dejalo para implementarlo post-entrega
     self.tramites_abiertos = []
     self.tramites_resueltos = []
-    self.fecha_baja = fecha_baja
 
   
   def asignarProfesor(self):
     contador = 0
     flag1 = False
     flag2 = True
-    legajo_profesor = validadorLegajoAdminyProf(ITBA,"prof")
+    legajo_profesor = validadorLegajoAdminyProf(ITBA,"profesor")
     materias_disponibles = []
     for profesor in ITBA.profesores:
       if profesor.legajo == legajo_profesor:
@@ -480,6 +487,13 @@ class Administrativo(Persona):
         #Una vez que le cambio el estado, tengo que poner el tramite en la lista de tramites resueltos de la Institución y el administrativo
           ITBA.tramites_resueltos.append(tramite)
           self.tramites_resueltos.append(tramite)
+          if tramite.alumno != None:
+            tramite.alumno.tramites_abiertos.remove(tramite)
+            tramite.alumno.tramites_resueltos.append(tramite)
+          elif tramite.profesor != None:
+            tramite.profesor.tramites_abiertos.remove(tramite)
+            tramite.profesor.tramites_resueltos.append(tramite)
+
           return print("El tramite {} ha sido resuelto".format(tramite.tipo_de_tramite))
       clear()
     
@@ -504,20 +518,20 @@ class Administrativo(Persona):
       if opcion_elegida == cont_opciones:
          resolviendo_tramites = False
       else:
-         self.resolverTramite(self.tramites_abiertos[cont_opciones-1])
+         self.resolverTramite(self.tramites_abiertos[opcion_elegida-1])
 
 
 
   def altaAlumno(self):
     nombre = input("Ingrese el nombre del alumno: ")
-    dni = input("Ingrese el DNI del alumno: ")
-    sexo = input("Ingrese el sexo del alumno: ")
-    fecha_nacimiento = input("Ingrese la fecha de nacimiento del alumno: ")
+    dni = validadorDNI()
+    sexo = validadorSexo()
+    fecha_nacimiento = validadorFecha()
     if len(ITBA.legajos_alumnos) != 0:
       legajo = ITBA.legajos_alumnos[-1] + 1
     else:
       legajo = 10000
-    fecha_ingreso = input("Ingrese la fecha de ingreso del alumno: ")
+    fecha_ingreso = datetime.strptime(datetime.today().strftime('%d/%m/%Y'), '%d/%m/%Y')
     contador = 0
     flag = True
     alumno_nuevo = Alumno(nombre, dni, sexo, fecha_nacimiento, legajo, fecha_ingreso)
@@ -543,16 +557,16 @@ class Administrativo(Persona):
 
   def altaProfesor(self):
     nombre = input("Ingrese el nombre del profesor: ")
-    dni = input("Ingrese el DNI del profesor: ")
-    sexo = input("Ingrese el sexo del profesor: ")
-    fecha_nacimiento= input("Ingrese la fecha de nacimiento del profesor: ")
+    dni = validadorDNI()
+    sexo = validadorSexo()
+    fecha_nacimiento= validadorFecha()
     if len(ITBA.legajos_profesores) != 0:
       legajo_numero = int(ITBA.legajos_profesores[-1][2:]) + 1
       legajo_alfa = "PR"
       legajo = legajo_alfa + str(legajo_numero)
     else:
       legajo="PR10000"
-    fecha_ingreso = input("Ingrese la fecha de ingreso del profesor: ")
+    fecha_ingreso = datetime.strptime(datetime.today().strftime('%d/%m/%Y'), '%d/%m/%Y')
 
     profesor_nuevo = Profesor(nombre, dni, sexo, fecha_nacimiento, legajo, fecha_ingreso)
     ITBA.agregar_profesor(profesor_nuevo)
@@ -567,6 +581,7 @@ class Administrativo(Persona):
         print(alumno.carrera.alumnos_actuales)
         alumno.carrera.alumnos_actuales.remove(alumno)
         print(alumno.carrera.alumnos_actuales)
+        alumno.fecha_baja = datetime.strptime(datetime.today().strftime('%d/%m/%Y'), '%d/%m/%Y')
 
 
   def bajaProfesor(self):
@@ -576,6 +591,7 @@ class Administrativo(Persona):
     for profesor in ITBA.profesores:
       if profesor.legajo == legajo_profesor:
         profesor_elegido = profesor
+        profesor_elegido.fecha_baja = datetime.strptime(datetime.today().strftime('%d/%m/%Y'), '%d/%m/%Y')
     for carrera in ITBA.carreras:
       for materia in carrera.materias:
         if len(materia.comisiones) != 0:
@@ -618,10 +634,10 @@ class Administrativo(Persona):
           cod_comi = ascii_uppercase[len(materia_elegida.comisiones)]
 
         print(f"Creación de la comision para {materia_elegida.nombre}\n")
-        aula = input("Ingrese el aula de la Comisión: ")
-        profesor_asignado = validadorLegajoAdminyProf(ITBA,"prof")
-        dia = input("Ingrese el/los dia/s de la semana separados por (,): ").upper().replace(" ","").split(",")
-        horario = input("Ingrese el/los horario/s respectivamente a los dias ingresados previamente.(Ejemplo: 10:30 - 12:40): ").replace(" ","").split(",")
+        aula = validadorAula()
+        profesor_asignado = validadorLegajoAdminyProf(ITBA,"profesor")
+        dia = validadorDia().upper().replace(" ","").split(",")
+        horario = validadorHorario(dia).replace(" ","").split(",")
         dia_horario = {"Dia":dia,"Horario":horario}
         clear()
         

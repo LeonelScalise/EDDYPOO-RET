@@ -1,10 +1,10 @@
-def validadorNota():
+def validadorSexo():
     inicio = True
     while inicio:
         try:
-            Nota_final = int(input("\nIngrese la nota final del alumno: "))
-            if Nota_final > 10 or Nota_final < 1:
-                raise Exception("\nLa nota debe ser un numero entero de 1 a 10.\n")
+            sexo = input("\nIngrese el sexo (M/F): ")
+            if sexo not in ["M", "F"]:
+                raise Exception("\nEl sexo debe ser 'M' o 'F'.\n")
             else:
                 inicio = False
         except ValueError:
@@ -12,4 +12,4 @@ def validadorNota():
         except Exception as e: 
                 print(e)
     
-    return Nota_final
+    return sexo
