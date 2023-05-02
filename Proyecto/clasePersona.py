@@ -464,8 +464,7 @@ class Administrativo(Persona):
         
   
         print(f'La materia {materia_elegida.nombre} tiene {len(materia_elegida.profesores)} profesores')
-        for comi in materia_elegida.comisiones:
-          print(f'{comi.codigo_comision} {comi.profesor}')
+  
 
 
     elif opcion_elegida1 == 2:
@@ -480,7 +479,7 @@ class Administrativo(Persona):
         materia_elegida = materias_de_profesor[opcion_elegida4 - 1]
         print(f'Escoja la comisión para desasignar\n\n')
         for comi in materia_elegida.comisiones:
-          if comi.profesor == profesor_elegido:
+          if comi.profesor != None and comi.profesor == profesor_elegido:
             c2 += 1
             print(f'{c2}. {comi.codigo_comision}')
           
@@ -498,8 +497,7 @@ class Administrativo(Persona):
           if chequeo_profe_en_materia == 0:
             materia_elegida.profesores.remove(profesor_elegido)
         
-        for comi in materia_elegida.comisiones:
-          print(f'{comi.codigo_comision} {comi.profesor}')
+        
         print(f'La materia {materia_elegida.nombre} tiene {len(materia_elegida.profesores)} profesores')
       
       else:
